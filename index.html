@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>מודל כדאיות למשקיע LP — פרויקט מלון ומגורים, ירושלים</title>
+<style>
+  :root{
+    --bg:#faf8f5; --card:#ffffff; --ink:#2b2320; --muted:#7a6f6a; --line:#e6ddd6;
+    --oxblood:#5e2c23; --oxblood2:#4a221b; --azure:#adc4da; --azure2:#7f9db8;
+    --accent:#5e2c23; --accent2:#7f9db8; --pos:#7f9db8; --neg:#5e2c23; --chip:#f2ece6;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{background:var(--bg); color:var(--ink);
+    font-family:Georgia,"Times New Roman","David",serif;
+    padding:0 22px 22px; max-width:1320px; margin:0 auto;}
+  .brandbar{background:var(--oxblood); margin:0 -22px 22px; padding:24px 34px;
+    display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:14px;}
+  .brand-logo{display:block; text-decoration:none;}
+  .brand-logo .wm{font-family:Georgia,"Times New Roman",serif; color:var(--azure);
+    font-size:28px; letter-spacing:10px; font-weight:400; line-height:1;}
+  .brand-logo .wm-sub{font-size:9px; letter-spacing:5px; color:var(--azure); opacity:.85; margin-top:6px; text-align:center;}
+  header{display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:10px; margin-bottom:18px;}
+  h1{font-size:26px; font-weight:400; color:var(--oxblood); font-family:Georgia,"Times New Roman",serif; letter-spacing:.5px;}
+  h1 small{display:block; font-size:13px; color:var(--muted); font-weight:400; margin-top:4px;}
+  .hdr-side{display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
+  .badge{background:transparent; border:1px solid var(--line); color:var(--muted);
+    padding:6px 14px; border-radius:0; font-size:11.5px; letter-spacing:.3px;}
+  .langsw{display:flex; border:1px solid rgba(173,196,218,.5); border-radius:0; overflow:hidden; background:transparent;}
+  .langsw button{border:none; background:none; padding:6px 16px; font-size:12px; cursor:pointer;
+    color:var(--azure); font-family:inherit; letter-spacing:1px;}
+  .langsw button.on{background:var(--azure); color:var(--oxblood);}
+  .grid{display:grid; grid-template-columns:360px 1fr; gap:18px;}
+  @media(max-width:940px){.grid{grid-template-columns:1fr;}}
+  .card{background:var(--card); border:1px solid var(--line); border-radius:2px; padding:18px;
+    box-shadow:none;}
+  .card h2{font-size:15.5px; font-weight:400; color:var(--oxblood); margin-bottom:12px; letter-spacing:.8px;
+    display:flex; align-items:center; gap:10px; font-family:Georgia,"Times New Roman",serif;}
+  .card h2::after{content:""; flex:1; height:1px; background:var(--line);}
+  .ctl{margin-bottom:13px;}
+  .ctl .lab{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:4px; gap:8px;}
+  .ctl .lab span{font-size:12.5px; font-weight:600;}
+  .ctl .lab .val{font-size:12.5px; color:var(--oxblood); font-weight:700; direction:ltr; white-space:nowrap; font-variant-numeric:tabular-nums;}
+  .ctl .sub{font-size:10.5px; color:var(--muted); margin-top:2px;}
+  input[type=range]{width:100%; accent-color:var(--oxblood); cursor:pointer; height:22px;}
+  .ctl.changed .lab span:first-child::after{content:" •"; color:var(--azure2);}
+  details{margin-bottom:8px; border:1px solid var(--line); border-radius:2px; padding:8px 12px;}
+  details[open]{padding-bottom:4px;}
+  summary{cursor:pointer; font-size:13px; font-weight:700; color:var(--oxblood); padding:4px 0; user-select:none;}
+  summary .mini{font-weight:400; color:var(--muted); font-size:11px; margin-inline-start:6px;}
+  .chips{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px;}
+  .chip{background:var(--chip); border:1px solid var(--line); border-radius:16px;
+    padding:5px 12px; font-size:12px; cursor:pointer; user-select:none;}
+  .chip:hover{border-color:var(--oxblood);}
+  .chip.active{background:var(--oxblood); color:#fff; border-color:var(--oxblood);}
+  .reset{width:100%; margin-top:6px; background:none; border:1px solid var(--line); border-radius:2px;
+    padding:8px; font-size:13px; color:var(--muted); cursor:pointer; font-family:inherit;}
+  .reset:hover{border-color:var(--oxblood); color:var(--oxblood);}
+  .heroes{display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:16px;}
+  @media(max-width:700px){.heroes{grid-template-columns:repeat(2,1fr);}}
+  .hero{background:var(--oxblood); color:#fff; border-radius:2px; padding:18px 18px 14px;}
+  .hero .t{font-size:10.5px; letter-spacing:1.4px; text-transform:uppercase; color:var(--azure); margin-bottom:9px; opacity:1;}
+  .hero .v{font-size:29px; font-weight:400; direction:ltr; text-align:center; letter-spacing:0; font-family:Georgia,"Times New Roman",serif; font-variant-numeric:tabular-nums;}
+  .hero .d{font-size:11px; margin-top:7px; direction:ltr; text-align:center;}
+  .hero .d.pos{color:#bcd4a8;} .hero .d.neg{color:#e8b3a2;} .hero .d.zero{color:var(--azure); opacity:.75;}
+  .secrow{display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:16px;}
+  @media(max-width:700px){.secrow{grid-template-columns:repeat(2,1fr);}}
+  .sec{background:var(--card); border:1px solid var(--line); border-radius:2px; padding:12px 16px;}
+  .sec .t{font-size:11.5px; color:var(--muted); margin-bottom:4px;}
+  .sec .v{font-size:15px; font-weight:700; direction:ltr; text-align:right; color:var(--oxblood); font-family:Georgia,serif; font-variant-numeric:tabular-nums;}
+  .charts{display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-bottom:18px;}
+  @media(max-width:940px){.charts{grid-template-columns:1fr;}}
+  svg text{font-family:inherit;}
+  .scen-grid{display:grid; grid-template-columns:repeat(5,1fr); gap:12px;}
+  @media(max-width:980px){.scen-grid{grid-template-columns:repeat(2,1fr);}}
+  .scen{border:1px solid var(--line); border-radius:2px; overflow:hidden; background:#fdfcfa;
+    display:flex; flex-direction:column;}
+  .scen .head{padding:9px 12px 8px; color:#fff; font-size:13px; font-weight:700;}
+  .scen .head small{display:block; font-weight:400; font-size:10px; opacity:.85; margin-top:2px; line-height:1.45;}
+  .scen .body{padding:12px; display:flex; flex-direction:column; gap:9px; flex:1;}
+  .scen .irr{font-size:25px; font-weight:800; direction:ltr; text-align:right; letter-spacing:-.5px; line-height:1;}
+  .scen .irr small{font-size:10.5px; font-weight:400; color:var(--muted); display:block; margin-top:3px; letter-spacing:0;}
+  .scen .m{font-size:12px; color:var(--muted); display:flex; justify-content:space-between; gap:6px;
+    border-top:1px dashed var(--line); padding-top:7px;}
+  .scen .m b{color:var(--ink); direction:ltr; white-space:nowrap;}
+  .scen.you{outline:2px solid var(--azure2); background:#f7fafc;}
+  .scen-note{font-size:11px; color:var(--muted); margin-top:10px;}
+  table.taxtbl{width:100%; border-collapse:collapse; font-size:12.5px;}
+  table.taxtbl th{background:var(--chip); font-weight:600; text-align:start;}
+  table.taxtbl th,table.taxtbl td{border:1px solid var(--line); padding:7px 10px;}
+  table.taxtbl td.n{direction:ltr; text-align:center; font-variant-numeric:tabular-nums; white-space:nowrap; width:90px;}
+  table.taxtbl td:last-child{color:var(--muted); font-size:11px;}
+  table.taxtbl tr.tot td{font-weight:700; background:var(--chip);}
+  table.taxtbl tr.tot td:last-child{font-weight:400;}
+  .foot{font-size:11.5px; color:var(--muted); line-height:1.7; margin-top:16px;}
+  .foot b{color:var(--ink);}
+  .terms{font-size:12px; line-height:1.5; padding-bottom:6px;}
+  .terms .trow{display:flex; justify-content:space-between; gap:10px; padding:4px 0; border-bottom:1px dashed var(--line);}
+  .terms .trow:last-child{border-bottom:none;}
+  .terms .trow span:first-child{color:var(--muted);}
+  .terms .trow span:last-child{font-weight:600; white-space:nowrap;}
+.su-grid{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+  .su-panel{border:1px solid var(--line); border-radius:2px; padding:10px 16px 12px; background:#fdfcfa;}
+  .su-panel.you{outline:2px solid var(--azure2); background:#f7fafc;}
+  .su-t{font-weight:700; font-size:13.5px; color:var(--oxblood); letter-spacing:.5px; padding-bottom:6px; border-bottom:1px solid var(--line); margin-bottom:4px;}
+  @media(max-width:700px){.su-grid{grid-template-columns:1fr;}}
+  .su-h{font-size:11px; color:var(--muted); letter-spacing:1px; font-weight:700; margin:4px 0 2px;}
+  .su-grid .trow{display:flex; justify-content:space-between; gap:10px; padding:5px 0; border-bottom:1px dashed var(--line); font-size:12.5px;}
+  .su-grid .trow span:last-child{font-weight:600; direction:ltr; font-variant-numeric:tabular-nums;}
+  .su-grid .trow.tot{border-bottom:none; font-weight:700; color:var(--oxblood);}
+  @media print{.langsw,.reset,.chips{display:none} body{max-width:none; padding:0 10px 10px} .card,.hero,.scen,.charts>div{break-inside:avoid} details{border:none; padding:0} details>*{display:block}}
+</style>
+</head>
+<body>
+<div class="brandbar">
+  <a class="brand-logo" href="https://www.omnamgroup.com" target="_blank" rel="noopener">
+    <div class="wm">OMNAM</div>
+    <div class="wm-sub">INVESTMENT&nbsp;GROUP</div>
+  </a>
+  <div class="langsw"><button id="lang-he" class="on">עברית</button><button id="lang-en">English</button></div>
+</div>
+<header>
+  <h1 data-t="h1"></h1>
+  <div class="hdr-side">
+    <div class="badge" data-t="badge"></div>
+  </div>
+</header>
+
+<div class="grid">
+  <div>
+    <div class="card">
+      <h2 data-t="quick"></h2>
+      <div class="chips" id="chips">
+        <div class="chip active" data-s="base" data-t="chipBase"></div>
+        <div class="chip" data-s="up" data-t="chipUp"></div>
+        <div class="chip" data-s="dw1" data-t="chipDw1"></div>
+        <div class="chip" data-s="dw2" data-t="chipDw2"></div>
+      </div>
+
+      <details open>
+        <summary data-t="gHotel"></summary>
+        <div class="ctl" id="c-adr">
+          <div class="lab"><span data-t="lAdr"></span><span class="val" id="v-adr"></span></div>
+          <input type="range" id="i-adr" min="3000" max="6000" step="1" value="4736">
+          <div class="sub" data-t="sAdr"></div>
+        </div>
+        <div class="ctl" id="c-occ">
+          <div class="lab"><span data-t="lOcc"></span><span class="val" id="v-occ"></span></div>
+          <input type="range" id="i-occ" min="0.45" max="0.80" step="0.01" value="0.70">
+          <div class="sub" data-t="sOcc"></div>
+        </div>
+        <div class="ctl" id="c-margin">
+          <div class="lab"><span data-t="lMargin"></span><span class="val" id="v-margin"></span></div>
+          <input type="range" id="i-margin" min="14" max="26" step="0.1" value="20.2">
+          <div class="sub" data-t="sMargin"></div>
+        </div>
+        <div class="ctl" id="c-cap">
+          <div class="lab"><span data-t="lCap"></span><span class="val" id="v-cap"></span></div>
+          <input type="range" id="i-cap" min="0.05" max="0.10" step="0.0025" value="0.065">
+          <div class="sub" data-t="sCap"></div>
+        </div>
+        <div class="ctl" id="c-hold">
+          <div class="lab"><span data-t="lHold"></span><span class="val" id="v-hold"></span></div>
+          <input type="range" id="i-hold" min="-24" max="48" step="6" value="0">
+          <div class="sub" data-t="sHold"></div>
+        </div>
+      </details>
+
+      <details open>
+        <summary data-t="gResi"></summary>
+        <div class="ctl" id="c-price">
+          <div class="lab"><span data-t="lPrice"></span><span class="val" id="v-price"></span></div>
+          <input type="range" id="i-price" min="90000" max="270000" step="1500" value="180180">
+          <div class="sub" data-t="sPrice"></div>
+        </div>
+        <div class="ctl" id="c-area">
+          <div class="lab"><span data-t="lArea"></span><span class="val" id="v-area"></span></div>
+          <input type="range" id="i-area" min="5000" max="9000" step="100" value="7230">
+          <div class="sub" data-t="sArea"></div>
+        </div>
+        <div class="ctl" id="c-vel">
+          <div class="lab"><span data-t="lVel"></span><span class="val" id="v-vel"></span></div>
+          <input type="range" id="i-vel" min="0.3" max="1.6" step="0.05" value="1">
+          <div class="sub" data-t="sVel"></div>
+        </div>
+      </details>
+
+      <details>
+        <summary data-t="gFin"></summary>
+        <div class="ctl" id="c-rate">
+          <div class="lab"><span data-t="lRate"></span><span class="val" id="v-rate"></span></div>
+          <input type="range" id="i-rate" min="0.05" max="0.12" step="0.0025" value="0.0605">
+          <div class="sub" data-t="sRate"></div>
+        </div>
+        <div class="ctl" id="c-ltv">
+          <div class="lab"><span data-t="lLtv"></span><span class="val" id="v-ltv"></span></div>
+          <input type="range" id="i-ltv" min="0.50" max="0.80" step="0.025" value="0.70">
+          <div class="sub" data-t="sLtv"></div>
+        </div>
+        <div class="ctl" id="c-capex">
+          <div class="lab"><span data-t="lCapex"></span><span class="val" id="v-capex"></span></div>
+          <input type="range" id="i-capex" min="0" max="0.25" step="0.01" value="0">
+          <div class="sub" data-t="sCapex"></div>
+        </div>
+      </details>
+
+      <details>
+        <summary data-t="gTime"></summary>
+        <div class="ctl" id="c-kz">
+          <div class="lab"><span data-t="lKz"></span><span class="val" id="v-kz"></span></div>
+          <input type="range" id="i-kz" min="0" max="24" step="1" value="0">
+          <div class="sub" data-t="sKz"></div>
+        </div>
+        <div class="ctl" id="c-kcr">
+          <div class="lab"><span data-t="lKcr"></span><span class="val" id="v-kcr"></span></div>
+          <input type="range" id="i-kcr" min="0" max="24" step="1" value="0">
+          <div class="sub" data-t="sKcr"></div>
+        </div>
+        <div class="ctl" id="c-kch">
+          <div class="lab"><span data-t="lKch"></span><span class="val" id="v-kch"></span></div>
+          <input type="range" id="i-kch" min="0" max="24" step="1" value="0">
+          <div class="sub" data-t="sKch"></div>
+        </div>
+      </details>
+
+      <details>
+        <summary data-t="gTerms"></summary>
+        <div class="terms" id="terms"></div>
+      </details>
+
+      <button class="reset" id="reset" data-t="reset"></button>
+    </div>
+  </div>
+
+  <div>
+    <div class="heroes">
+      <div class="hero"><div class="t" data-t="hIrr"></div><div class="v" id="o-irr">—</div><div class="d" id="d-irr"></div></div>
+      <div class="hero"><div class="t" data-t="hEm"></div><div class="v" id="o-em">—</div><div class="d" id="d-em"></div></div>
+      <div class="hero"><div class="t" data-t="hProfit"></div><div class="v" id="o-profit">—</div><div class="d" id="d-profit"></div></div>
+      <div class="hero"><div class="t" data-t="hPe"></div><div class="v" id="o-pe">—</div><div class="d" id="d-pe"></div></div>
+    </div>
+    <div class="secrow">
+      <div class="sec"><div class="t" data-t="secPayback"></div><div class="v" id="o-payback">—</div></div>
+      <div class="sec"><div class="t" data-t="secDist"></div><div class="v" id="o-dist">—</div></div>
+      <div class="sec"><div class="t" data-t="secExit"></div><div class="v" id="o-exit">—</div></div>
+    </div>
+
+    <div class="card" style="margin-bottom:18px;">
+      <h2 data-t="tlTitle"></h2>
+      <svg id="ch-tl" viewBox="0 0 1120 104" width="100%"></svg>
+    </div>
+
+    <div class="charts">
+      <div class="card">
+        <h2 data-t="chCf"></h2>
+        <svg id="ch-cf" width="100%" height="240" viewBox="0 0 560 240" preserveAspectRatio="none"></svg>
+      </div>
+      <div class="card">
+        <h2 data-t="chCum"></h2>
+        <svg id="ch-cum" width="100%" height="240" viewBox="0 0 560 240" preserveAspectRatio="none"></svg>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:18px;">
+      <h2 data-t="taxTitle"></h2>
+      <table class="taxtbl">
+        <tr><th data-t="taxH1"></th><th data-t="taxH2"></th><th data-t="taxH3"></th><th data-t="taxH4"></th></tr>
+        <tr><td data-t="taxBet"></td><td class="n">47.9</td><td class="n" id="tx-bet">—</td><td data-t="taxBetN"></td></tr>
+        <tr><td data-t="taxResi"></td><td class="n">183.0</td><td class="n" id="tx-resi">—</td><td data-t="taxResiN"></td></tr>
+        <tr><td data-t="taxHot"></td><td class="n">15.3</td><td class="n" id="tx-hotel">—</td><td data-t="taxHotN"></td></tr>
+        <tr class="tot"><td data-t="taxTot"></td><td class="n">246.3</td><td class="n" id="tx-tot">—</td><td id="tx-note">—</td></tr>
+      </table>
+      <div class="sub" style="margin-top:8px; margin-bottom:0;" data-t="taxScope"></div>
+    </div>
+
+    <div class="card">
+      <h2 data-t="scenTitle"></h2>
+      <div class="scen-grid" id="scen-grid"></div>
+      <div class="scen-note" data-t="scenNote"></div>
+    </div>
+
+    <div class="card" style="margin-top:18px;">
+      <h2 data-t="suTitle"></h2>
+      <div class="su-grid">
+        <div class="su-panel">
+          <div class="su-t" data-t="suBaseH"></div>
+          <div class="su-h" data-t="suUsesH"></div>
+          <div class="trow"><span data-t="suAcq"></span><span>62.1</span></div>
+          <div class="trow"><span data-t="suDev"></span><span>486.6</span></div>
+          <div class="trow"><span data-t="suBet"></span><span>47.9</span></div>
+          <div class="trow"><span data-t="suFin"></span><span>159.9</span></div>
+          <div class="trow tot"><span data-t="suUsesT"></span><span>756.5</span></div>
+          <div class="su-h" data-t="suSrcH"></div>
+          <div class="trow"><span data-t="suResi"></span><span>1,116.6</span></div>
+          <div class="trow"><span data-t="suHotel"></span><span>403.2</span></div>
+          <div class="trow"><span data-t="suNoi"></span><span>123.0</span></div>
+          <div class="trow"><span data-t="suOther"></span><span>38.0</span></div>
+          <div class="trow tot"><span data-t="suSrcT"></span><span>1,680.8</span></div>
+        </div>
+        <div class="su-panel you">
+          <div class="su-t" data-t="suYouH"></div>
+          <div class="su-h" data-t="suUsesH"></div>
+          <div class="trow"><span data-t="suAcq"></span><span>62.1</span></div>
+          <div class="trow"><span data-t="suDev"></span><span id="su-dev">486.6</span></div>
+          <div class="trow"><span data-t="suBet"></span><span id="su-bet">47.9</span></div>
+          <div class="trow"><span data-t="suFin"></span><span id="su-fin">159.9</span></div>
+          <div class="trow tot"><span data-t="suUsesT"></span><span id="su-uses-t">756.5</span></div>
+          <div class="su-h" data-t="suSrcH"></div>
+          <div class="trow"><span data-t="suResi"></span><span id="su-resi">1,116.6</span></div>
+          <div class="trow"><span data-t="suHotel"></span><span id="su-hotel">403.2</span></div>
+          <div class="trow"><span data-t="suNoi"></span><span id="su-noi">123.0</span></div>
+          <div class="trow"><span data-t="suOther"></span><span>38.0</span></div>
+          <div class="trow tot"><span data-t="suSrcT"></span><span id="su-src-t">1,680.8</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="foot" data-t="foot"></div>
+  </div>
+</div>
+<div style="background:var(--oxblood); margin:20px -22px 0; padding:12px 34px; display:flex; justify-content:space-between; align-items:center;">
+  <span style="font-family:Georgia,serif; color:var(--azure); font-size:12.5px; letter-spacing:5px;">OMNAM</span>
+  <span style="color:var(--azure); font-size:9.5px; letter-spacing:3px; opacity:.8;">CONFIDENTIAL</span>
+</div>
+
+<script>
+const DATA = {"months": [45900.0, 45930.0, 45961.0, 45991.0, 46022.0, 46053.0, 46081.0, 46112.0, 46142.0, 46173.0, 46203.0, 46234.0, 46265.0, 46295.0, 46326.0, 46356.0, 46387.0, 46418.0, 46446.0, 46477.0, 46507.0, 46538.0, 46568.0, 46599.0, 46630.0, 46660.0, 46691.0, 46721.0, 46752.0, 46783.0, 46812.0, 46843.0, 46873.0, 46904.0, 46934.0, 46965.0, 46996.0, 47026.0, 47057.0, 47087.0, 47118.0, 47149.0, 47177.0, 47208.0, 47238.0, 47269.0, 47299.0, 47330.0, 47361.0, 47391.0, 47422.0, 47452.0, 47483.0, 47514.0, 47542.0, 47573.0, 47603.0, 47634.0, 47664.0, 47695.0, 47726.0, 47756.0, 47787.0, 47817.0, 47848.0, 47879.0, 47907.0, 47938.0, 47968.0, 47999.0, 48029.0, 48060.0, 48091.0, 48121.0, 48152.0, 48182.0, 48213.0, 48244.0, 48273.0, 48304.0, 48334.0, 48365.0, 48395.0, 48426.0, 48457.0, 48487.0, 48518.0, 48548.0, 48579.0, 48610.0, 48638.0, 48669.0, 48699.0, 48730.0, 48760.0, 48791.0, 48822.0, 48852.0, 48883.0, 48913.0, 48944.0, 48975.0, 49003.0, 49034.0, 49064.0, 49095.0, 49125.0, 49156.0, 49187.0, 49217.0, 49248.0, 49278.0, 49309.0, 49340.0, 49368.0, 49399.0, 49429.0, 49460.0, 49490.0, 49521.0, 49552.0, 49582.0, 49613.0, 49643.0, 49674.0, 49705.0, 49734.0, 49765.0, 49795.0, 49826.0, 49856.0, 49887.0, 49918.0, 49948.0, 49979.0, 50009.0, 50040.0, 50071.0, 50099.0, 50130.0, 50160.0, 50191.0, 50221.0, 50252.0, 50283.0, 50313.0, 50344.0, 50374.0, 50405.0, 50436.0, 50464.0, 50495.0, 50525.0, 50556.0, 50586.0, 50617.0, 50648.0, 50678.0, 50709.0, 50739.0, 50770.0, 50801.0, 50829.0, 50860.0, 50890.0, 50921.0, 50951.0, 50982.0, 51013.0, 51043.0, 51074.0, 51104.0, 51135.0, 51166.0, 51195.0, 51226.0, 51256.0, 51287.0, 51317.0, 51348.0, 51379.0, 51409.0, 51440.0, 51470.0, 51501.0, 51532.0, 51560.0, 51591.0, 51621.0, 51652.0, 51682.0, 51713.0, 51744.0, 51774.0, 51805.0, 51835.0, 51866.0, 51897.0, 51925.0], "yf": [0.08219178, 0.08219178, 0.08493151, 0.08219178, 0.08493151, 0.08493151, 0.07671233, 0.08493151, 0.08219178, 0.08493151, 0.08219178, 0.08493151, 0.08493151, 0.08219178, 0.08493151, 0.08219178, 0.08493151, 0.08493151, 0.07671233, 0.08493151, 0.08219178, 0.08493151, 0.08219178, 0.08493151, 0.08493151, 0.08219178, 0.08493151, 0.08219178, 0.08493151, 0.08493151, 0.07945205, 0.08493151, 0.08219178, 0.08493151, 0.08219178, 0.08493151, 0.08493151, 0.08219178, 0.08493151, 0.08219178, 0.08493151, 0.08493151, 0.07671233, 0.08493151, 0.08219178, 0.08493151, 0.08219178, 0.08493151, 0.08493151, 0.08219178, 0.08493151, 0.08219178, 0.08493151, 0.08493151, 0.07671233, 0.08493151, 0.08219178, 0.08493151, 0.08219178, 0.08493151, 0.08493151, 0.08219178, 0.08493151, 0.08219178, 0.08493151, 0.08493151, 0.07671233, 0.08493151, 0.08219178, 0.08493151, 0.08219178, 0.08493151, 0.08493151, 0.08219178, 0.08493151, 0.08219178, 0.08493151, 0.08493151, 0.07945205, 0.08493151, 0.08219178, 0.08493151, 0.08219178, 0.08493151, 0.08493151, 0.08219178, 0.08493151, 0.08219178, 0.08493151, 0.08493151, 0.07671233, 0.08493151, 0.08219178, 0.08493151, 0.08219178, 0.08493151, 0.08493151, 0.08219178, 0.08493151, 0.08219178, 0.08493151, 0.08493151, 0.07671233, 0.08493151, 0.08219178, 0.08493151, 0.08219178, 0.08493151, 0.08493151, 0.08219178, 0.08493151, 0.08219178, 0.08493151, 0.08493151, 0.07671233, 0.08493151, 0.08219178, 0.08493151, 0.08219178, 0.08493151, 0.08493151, 0.08219178, 0.08493151, 0.08219178, 0.08493151, 0.08493151, 0.07945205, 0.08493151, 0.08219178, 0.08493151, 0.08219178, 0.08493151, 0.08493151, 0.08219178, 0.08493151, 0.08219178, 0.08493151, 0.08493151, 0.07671233, 0.08493151, 0.08219178, 0.08493151, 0.08219178, 0.08493151, 0.08493151, 0.08219178, 0.08493151, 0.08219178, 0.08493151, 0.08493151, 0.07671233, 0.08493151, 0.08219178, 0.08493151, 0.08219178, 0.08493151, 0.08493151, 0.08219178, 0.08493151, 0.08219178, 0.08493151, 0.08493151, 0.07671233, 0.08493151, 0.08219178, 0.08493151, 0.08219178, 0.08493151, 0.08493151, 0.08219178, 0.08493151, 0.08219178, 0.08493151, 0.08493151, 0.07945205, 0.08493151, 0.08219178, 0.08493151, 0.08219178, 0.08493151, 0.08493151, 0.08219178, 0.08493151, 0.08219178, 0.08493151, 0.08493151, 0.07671233, 0.08493151, 0.08219178, 0.08493151, 0.08219178, 0.08493151, 0.08493151, 0.08219178, 0.08493151, 0.08219178, 0.08493151, 0.08493151, 0.07671233], "lpEntry": 46295, "holdBase": [-10000000.0, 0.0, 0.0, 0.0, 0.0, 0.0, -2000000.0, -3000000.0, -5308675.31, -3848680.09, -4172568.53, -5949661.57, -14144834.96, -12265371.62, -4631976.07, -32505289.31, -19000000.0, 0.0, 0.0, 0.0, -38151745.2, 0.0, 0.0, 0.0, 0.0, 0.0, -147420.15, 0.0, 0.0, -5000000.0, 0.0, 0.0, -221745.2, 0.0, 0.0, 0.0, 0.0, 0.0, -2357977.58, -6891674.51, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 57528510.67, 310656.42, 729498.17, 729498.17, 539361.67, 729498.17, -20319273.45, 461556.59, 729498.17, 729498.17, 475486.46, 509126.81, 509126.81, 313318.29, 509126.81, 509126.81, 420237.99, 509126.81, 358139623.21, 262841.24, 509126.81, 509126.81, 559594.76, 675494.28, 675494.28, 405256.06, 675494.28, 675494.28, 586605.46, 675494.28, 675494.28, 481312.67, 675494.28, 675494.28, 698795.21, 787684.02, 787684.02, 522956.59, 787684.02, 787684.02, 698795.21, 787684.02, 787684.02, 593502.42, 787684.02, 787684.02, 717490.2, 806379.01, 806379.01, 541651.58, 806379.01, 806379.01, 717490.2, 806379.01, 806379.01, 612197.41, 806379.01, 806379.01, 888391.9, 977280.71, 977280.71, 712553.28, 977280.71, 977280.71, 888391.9, 977280.71, 977280.71, 783099.11, 977280.71, 977280.71, 915568.34, 1004457.15, 1004457.15, 739729.71, 1004457.15, 1004457.15, 915568.34, 1004457.15, 23234547.7, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "lpBase": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -12265371.62, -4631976.07, -32505289.31, -19000000.0, 0.0, 0.0, 0.0, -38141533.45, 0.0, 0.0, 0.0, 0.0, 0.0, -147420.15, 0.0, 0.0, -5000000.0, 0.0, 0.0, -211533.45, 0.0, 0.0, 0.0, 0.0, 0.0, -2357977.58, -6891674.51, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 43542611.6, 644538.54, 966328.67, 966328.67, 823706.66, 451758.65, 27598492.26, 357811.64, 451758.65, 451758.65, 577694.27, 644360.88, 644360.88, 493924.0, 644360.88, 644360.88, 577694.27, 644360.88, 242215614.48, 306431.14, 429573.92, 429573.92, 498535.03, 556484.79, 556484.79, 418978.69, 556484.79, 556484.79, 512040.39, 556484.79, 556484.79, 459393.99, 556484.79, 556484.79, 598025.24, 642469.65, 642469.65, 507718.93, 642469.65, 642469.65, 598025.24, 642469.65, 642469.65, 545378.85, 642469.65, 642469.65, 612345.29, 656789.7, 656789.7, 522038.98, 656789.7, 656789.7, 612345.29, 656789.7, 656789.7, 559698.89, 656789.7, 656789.7, 704136.15, 748580.55, 748580.55, 613829.84, 748580.55, 748580.55, 704136.15, 748580.55, 748580.55, 651489.75, 748580.55, 748580.55, 724952.84, 769397.24, 769397.24, 634646.53, 769397.24, 769397.24, 724952.84, 769397.24, 13002210.65, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "gpBase": [-10000000.0, 0.0, 0.0, 0.0, 0.0, 0.0, -2000000.0, -3000000.0, -5308675.31, -3848680.09, -4172568.53, -5949661.57, -14144834.96, 0.0, 0.0, 0.0, -0.0, 0.0, 0.0, 0.0, -0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 14514203.87, 214846.18, 322109.56, 322109.56, 274568.89, 150586.22, 9199497.42, 119270.55, 150586.22, 150586.22, 192564.76, 214786.96, 214786.96, 164641.33, 214786.96, 214786.96, 192564.76, 214786.96, 116263052.14, 306431.14, 429573.92, 429573.92, 498535.03, 556484.79, 556484.79, 418978.69, 556484.79, 556484.79, 512040.39, 556484.79, 556484.79, 459393.99, 556484.79, 556484.79, 598025.24, 642469.65, 642469.65, 507718.93, 642469.65, 642469.65, 598025.24, 642469.65, 642469.65, 545378.85, 642469.65, 642469.65, 612345.29, 656789.7, 656789.7, 522038.98, 656789.7, 656789.7, 612345.29, 656789.7, 656789.7, 559698.89, 656789.7, 656789.7, 704136.15, 748580.55, 748580.55, 613829.84, 748580.55, 748580.55, 704136.15, 748580.55, 748580.55, 651489.75, 748580.55, 748580.55, 724952.84, 769397.24, 769397.24, 634646.53, 769397.24, 769397.24, 724952.84, 769397.24, 13002210.65, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "pBase": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 17437181.47, 310656.42, 729498.17, 729498.17, 539361.67, 729498.17, -36129567.35, 461556.59, 729498.17, 729498.17, 898904.8, 1089041.29, 1089041.29, 670199.55, 1089041.29, 1089041.29, 898904.8, 1089041.29, 574594732.91, 569471.65, 1089041.29, 1089041.29, 1200749.64, 1444907.54, 1444907.54, 867624.08, 1444907.54, 1444907.54, 1254771.04, 1444907.54, 1444907.54, 1029545.82, 1444907.54, 1444907.54, 1494749.11, 1684885.61, 1684885.61, 1118623.72, 1684885.61, 1684885.61, 1494749.11, 1684885.61, 1684885.61, 1269523.89, 1684885.61, 1684885.61, 1534738.4, 1724874.9, 1724874.9, 1158613.0, 1724874.9, 1724874.9, 1534738.4, 1724874.9, 1724874.9, 1309513.17, 1724874.9, 1724874.9, 1900303.53, 2090440.03, 2090440.03, 1524178.14, 2090440.03, 2090440.03, 1900303.53, 2090440.03, 2090440.03, 1675078.31, 2090440.03, 2090440.03, 1958434.95, 2148571.44, 2148571.44, 1582309.55, 2148571.44, 2148571.44, 1958434.95, 2148571.44, 49699567.28, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "resiPkgNB": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1800000.0, 0.0, 0.0, 799680.59, 1080000.0, 7336408.0, 13500000.0, 36368949.53, 0.0, 0.0, 0.0, 0.0, 37930000.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 573505691.61, -104207.92, 0.0, 0.0, -54021.41, 0.0, 0.0, -11021.56, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "resiBet": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -37930000.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "resiSalesSide": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 649973010.98, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "resiCapexSide": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1800000.0, 0.0, 0.0, 799680.59, 1080000.0, 7336408.0, 13500000.0, 36368949.53, 0.0, 0.0, 0.0, 0.0, 37930000.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -76467319.37, -104207.92, 0.0, 0.0, -54021.41, 0.0, 0.0, -11021.56, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "resiNet": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1116631423.95, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "noiStream": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 729498.17, 729498.17, 729498.17, 729498.17, 729498.17, 729498.17, 729498.17, 729498.17, 729498.17, 729498.17, 1089041.29, 1089041.29, 1089041.29, 1089041.29, 1089041.29, 1089041.29, 1089041.29, 1089041.29, 1089041.29, 1089041.29, 1089041.29, 1089041.29, 1444907.54, 1444907.54, 1444907.54, 1444907.54, 1444907.54, 1444907.54, 1444907.54, 1444907.54, 1444907.54, 1444907.54, 1444907.54, 1444907.54, 1684885.61, 1684885.61, 1684885.61, 1684885.61, 1684885.61, 1684885.61, 1684885.61, 1684885.61, 1684885.61, 1684885.61, 1684885.61, 1684885.61, 1724874.9, 1724874.9, 1724874.9, 1724874.9, 1724874.9, 1724874.9, 1724874.9, 1724874.9, 1724874.9, 1724874.9, 1724874.9, 1724874.9, 2090440.03, 2090440.03, 2090440.03, 2090440.03, 2090440.03, 2090440.03, 2090440.03, 2090440.03, 2090440.03, 2090440.03, 2090440.03, 2090440.03, 2148571.44, 2148571.44, 2148571.44, 2148571.44, 2148571.44, 2148571.44, 2148571.44, 2148571.44, 2148571.44, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "keyMoney": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 18018018.02, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "refiDraw": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 228395662.55, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "refiSvc": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -8041430.62, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -3245121.71, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "hotelVar": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -25558163.37, 729498.17, 729498.17, 729498.17, 729498.17, 729498.17, 221083730.1, -231666.91, -231666.91, -231666.91, 127876.22, 127876.22, 127876.22, 127876.22, 127876.22, 127876.22, 127876.22, 127876.22, 127876.22, 127876.22, 127876.22, 127876.22, 483742.46, 483742.46, 483742.46, 483742.46, 483742.46, 483742.46, 483742.46, 483742.46, 483742.46, 483742.46, 483742.46, 483742.46, 723720.53, 723720.53, 723720.53, 723720.53, 723720.53, 723720.53, 723720.53, 723720.53, 723720.53, 723720.53, 723720.53, 723720.53, 763709.82, 763709.82, 763709.82, 763709.82, 763709.82, 763709.82, 763709.82, 763709.82, 763709.82, 763709.82, 763709.82, 763709.82, 1129274.95, 1129274.95, 1129274.95, 1129274.95, 1129274.95, 1129274.95, 1129274.95, 1129274.95, 1129274.95, 1129274.95, 1129274.95, 1129274.95, 1187406.36, 1187406.36, 1187406.36, 1187406.36, 1187406.36, 1187406.36, 1187406.36, 1187406.36, 158424144.97, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "shlRepR": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -60291940.54, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "shlRepH": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -44305679.56, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "shlMirrorFix": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 5308675.31, 3848680.09, 4172568.53, 5949661.57, 14144834.96, 12265371.62, 4631976.07, 1505289.31, 0.0, 0.0, 0.0, 0.0, 38151745.2, 0.0, 0.0, 0.0, 0.0, 0.0, 147420.15, 0.0, 0.0, 0.0, 0.0, 0.0, 221745.2, 0.0, 0.0, 0.0, 0.0, 0.0, 2357977.58, 6891674.51, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 3428700.72, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "capexBasis": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -2458082.63, -2746222.28, -3020704.01, -3271287.31, -3487981.5, -3661716.8, -3784994.19, -3852451.21, -3861286.41, -3811498.03, -3705910.85, -3549987.75, -35045.09, -47435.3, -63211.93, -295256.11, -403043.18, -542272.52, -719083.41, -939763.49, -1210367.43, -1536232.24, -1921406.01, -2368022.23, -2875667.68, -3440805.49, -4056323.76, -4711282.36, -5390922.85, -6076989.68, -6870675.78, -7558049.44, -8203775.16, -8790465.39, -9303822.39, -9733921.59, -10076176.85, -10331850.35, -10508010.25, -10616896.9, -10674725.68, -10700024.61, -10711666.79, -10726803.28, -10758924.67, -10816273.28, -10900795.07, -11007761.05, -7812681.6, -8486299.16, -9075269.42, -9554846.06, -9904004.78, -10106969.79, -10154395.48, -10044079.92, -9781134.37, -9377590.63, -8851488.18, -8225537.66, -7525498.51, -6778431.76, -6010992.09, -5247906.12, -4510751.78, -3817110.83, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "taxW": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 183032946.46, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "intStream": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -555729.41, -356839.57, 0.0, -731500.36, -911537.66, 0.0, -731500.36, -1103593.88, 0.0, -731500.36, -1097548.31, 0.0, -731500.36, -1155369.24, 0.0, -731500.36, -1257242.81, 0.0, -731500.36, -1418205.24, 0.0, -731500.36, -1649958.32, 0.0, -732378.68, -3327922.27, 0.0, -735386.41, -4360436.85, 0.0, -741797.43, -4761722.43, 0.0, -754183.59, -5155657.8, 0.0, -775223.65, -5537802.85, 0.0, -805262.05, -5899130.27, 0.0, -840427.73, -6184271.46, -961165.08, -1589660.9, -3451297.12, -961165.08, -1120582.68, -1259345.16, -961165.08, -1119177.22, -1105813.51, -961165.08, -1098301.53, -988847.81, -961165.08, -1065373.0, -961165.08, -961165.08, -1015186.49, -961165.08, -961165.08, -972186.64, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, -961165.08, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "const": {"iex": 133, "iRefi": 61, "iSweep": 73, "capBase": 0.065, "noiExitBase": 26473043.0, "cgt": 0.23, "hotelBook": 336737000.0, "adrBase": 4204.2042, "occBase": 0.62, "resiBasePrice": 60000.0, "areaBase": 7230.0, "ltvBase": 0.7, "resiSalesTot": 1116631423.9529204, "capexKappa": 0.626, "mrate": 0.0050416666666666665, "rateBase": 0.0605, "bettermentTot": 47930000.0, "taxResiBase": 183033000.0, "marginBase": 0.202, "velBase": 1.0, "nUnits": 18.0, "leadM": 40, "sc2S0": 3315.2, "sc2Varp": 39317000.0, "sc2Fixed": 6186795.0, "sc2Noi": 33130205.0, "stabNoiM": 2158166.6666666665, "priority": 45000000.0, "contribShare": 0.4674, "marginDist": 0.5, "fx": 3.003, "iZonPay": 29, "d1Defer": 5000000.0}};
+/* engine */
+function makeEngine(D) {
+  const N = D.months.length, M = D.months, YF = D.yf, C = D.const;
+  const add = (...vs) => { const o = new Array(N).fill(0); for (const v of vs) for (let i = 0; i < N; i++) o[i] += v[i]; return o; };
+  const scale = (v, k) => v.map(x => x * k);
+  function shift(v, k) {
+    if (!k) return v.slice();
+    const o = new Array(N).fill(0);
+    for (let i = 0; i < N; i++) { let j = i + k; if (j >= N) j = N - 1; if (j < 0) j = 0; o[j] += v[i]; }
+    return o;
+  }
+  function xnpv(r, cfs, dates) { const d0 = dates[0]; let s = 0; for (let i = 0; i < cfs.length; i++) s += cfs[i] / Math.pow(1 + r, (dates[i] - d0) / 365); return s; }
+  function xirr(cfs, dates = M) {
+    const f = r => xnpv(r, cfs, dates);
+    const grid = [-0.9999,-0.999,-0.99,-0.98,-0.95,-0.8,-0.6,-0.4,-0.2,-0.1,-0.05,0,0.05,0.1,0.15,0.2,0.25,0.3,0.4,0.5,0.75,1,1.5,2,3,5,10];
+    const roots = []; let pr = null, pv = null;
+    for (const r of grid) {
+      const v = f(r);
+      if (!isFinite(v)) { pr = pv = null; continue; }
+      if (pv !== null && pv * v <= 0) {
+        let a = pr, b = r, fa = pv;
+        for (let k = 0; k < 200; k++) { const m2 = (a + b) / 2, fm = f(m2); if (fa * fm <= 0) b = m2; else { a = m2; fa = fm; } }
+        roots.push((a + b) / 2);
+      }
+      pr = r; pv = v;
+    }
+    if (!roots.length) return NaN;
+    return roots.reduce((b, x) => Math.abs(x - 0.1) < Math.abs(b - 0.1) ? x : b);
+  }
+  const peakEquity = cfs => { let c = 0, mn = 0; for (const x of cfs) { c += x; if (c < mn) mn = c; } return -mn; };
+  const sum = v => v.reduce((a, b) => a + b, 0);
+
+  const TAX_TOT = sum(D.taxW);
+
+  function noiPctFrom(adr, occ) {
+    // Year-4 stabilization P&L (70% / ADR 4,736.29): NOI = VARP*s - FIXED
+    const s = (adr * occ) / C.sc2S0;
+    return (C.sc2Varp * s - C.sc2Fixed) / C.sc2Noi - 1;
+  }
+
+  function velStream(stream, v) {
+    if (v * C.leadM >= C.nUnits) return stream;
+    const fracPc = v * C.leadM / C.nUnits;
+    const out = new Array(N).fill(0);
+    for (let i = 0; i < N; i++) {
+      const x = stream[i];
+      if (Math.abs(x) < 1) continue;
+      out[i] += x * fracPc;
+      const perM = x * v / C.nUnits;
+      let rem = x * (1 - fracPc), j = i + 1;
+      while (rem > 1 && j < N) { const amt = Math.min(perM, rem); out[j] += amt; rem -= amt; j++; }
+      if (rem > 1) out[N - 1] += rem;
+    }
+    return out;
+  }
+
+  function buildProject(p) {
+    const ar = (p.resiPrice / C.resiBasePrice) * (p.area / C.areaBase);
+    const ah = (1 + noiPctFrom(p.adr, p.occ)) * ((p.margin || C.marginBase) / C.marginBase);
+    const altv = p.ltv / C.ltvBase;
+    const kResiCapex = p.kz + p.kp, kResiSales = p.kz + p.kp + p.kcr;
+    const kHotOps = p.kch, kHotExit = p.kch + p.hold;
+
+    const removed = add(D.resiPkgNB, D.resiBet, D.hotelVar);
+    let P = D.pBase.map((x, i) => x - removed[i]);
+
+    // resi (velocity redistributes the net-proceeds stream)
+    const resiNetV = velStream(D.resiNet, p.vel || C.velBase);
+    let salesScaled = add(D.resiSalesSide, scale(D.resiNet, -1), scale(resiNetV, ar));
+    const dtax = -(ar - 1) * C.resiSalesTot * C.cgt;
+    salesScaled = salesScaled.map((x, i) => x + dtax * D.taxW[i] / TAX_TOT);
+    P = add(P, shift(D.resiCapexSide, kResiCapex), shift(salesScaled, kResiSales), shift(D.resiBet, p.kz));
+    const mr = (p.rate || C.rateBase) / 12;
+    if (p.kcr > 0) P[Math.min(C.iSweep + kResiSales, N - 1)] -= p.kcr * 223.33e6 * mr;
+    if (p.kz + p.kp > 0) P[Math.min(C.iSweep + kResiSales, N - 1)] -= (p.kz + p.kp) * 48.36e6 * mr;
+
+    // hotel
+    let ops = add(scale(D.noiStream, ah), D.keyMoney, scale(D.refiDraw, altv * ah), scale(D.refiSvc, altv * ah));
+    ops = shift(ops, kHotOps);
+    if (p.hold !== 0) {
+      const ext = new Array(N).fill(0), baseEnd = C.iex + kHotOps;
+      if (p.hold > 0) {
+        for (let t = 1; t <= p.hold; t++) {
+          const j = Math.min(baseEnd + t, N - 1);
+          ext[j] += C.stabNoiM * ah * Math.pow(1.025, t / 12) - 228.4e6 * altv * ah * (p.rate || C.rateBase) * 0.827 / 12;
+        }
+      } else {
+        for (let t = 0; t < -p.hold; t++) {
+          const j = Math.min(baseEnd - t, N - 1);
+          ext[j] -= D.noiStream[C.iex - t] * ah - D.refiSvc[C.iex - t] * altv * ah;
+        }
+      }
+      ops = add(ops, ext);
+    }
+    const saleNew = ah * C.noiExitBase * Math.pow(1.025, p.hold / 12) / p.cap * 0.99;
+    const cgtNew = -Math.max(0, C.cgt * (saleNew - C.hotelBook));
+    const iex2 = Math.min(Math.max(C.iex + kHotExit, 0), N - 1);
+    P[iex2] += saleNew + cgtNew - 228.4e6 * altv * ah;
+    P = add(P, ops, shift(D.shlRepH, kHotOps));
+    if (p.kch > 0) P[Math.min(C.iRefi + kHotOps, N - 1)] -= p.kch * 258.0e6 * C.mrate;
+
+    // capex overrun
+    if (p.capexOver !== 0) {
+      for (let i = 0; i < N; i++) P[i] += p.capexOver * C.capexKappa * D.capexBasis[i];
+      const basisTot = D.capexBasis.reduce((a, b) => a + Math.abs(b), 0);
+      const shield = p.capexOver * C.capexKappa * basisTot * 0.45 * C.cgt;
+      for (let i = 0; i < N; i++) P[i] += shield * D.taxW[i] / TAX_TOT;
+    }
+
+    // financing cost: scale interest/commitment streams by rate ratio
+    const rr = (p.rate || C.rateBase) / C.rateBase - 1;
+    if (rr !== 0) for (let i = 0; i < N; i++) P[i] += rr * D.intStream[i];
+
+    const mirror = add(D.shlMirrorFix, shift(D.shlRepR, kResiSales), shift(D.shlRepH, kHotOps));
+    return [P, mirror];
+  }
+
+  function T(P, mirror) {
+    const out = new Array(N).fill(0);
+    let pri = C.priority;
+    for (let i = 0; i < N; i++) {
+      const pp = P[i];
+      if (pp > 0) { const pr = Math.min(pp, pri); pri -= pr; out[i] += pr + C.marginDist * (pp - pr); }
+      else if (pp < 0) out[i] += C.contribShare * pp;
+      out[i] -= mirror[i];
+    }
+    return out;
+  }
+
+  function W(H, pref1, pref2, promote, lp1, lp2, gp) {
+    const lp1cf = new Array(N).fill(0), lp2cf = new Array(N).fill(0), gpcf = new Array(N).fill(0);
+    const b1 = { lp1: 0, lp2: 0, gp: 0 }, b2 = { lp1: 0, lp2: 0, gp: 0 };
+    const tot = lp1 + lp2 + gp;
+    const pp = { lp1: (1 - promote) * lp1 / tot, lp2: (1 - promote) * lp2 / tot, gp: (1 - promote) * gp / tot + promote };
+    const caps = { lp1: lp1 / tot, lp2: lp2 / tot, gp: gp / tot };
+    const cfOf = k => k === 'lp1' ? lp1cf : k === 'lp2' ? lp2cf : gpcf;
+    for (let i = 0; i < N; i++) {
+      for (const k in b1) b1[k] *= (1 + pref1 * YF[i]);
+      for (const k in b2) b2[k] *= (1 + pref2 * YF[i]);
+      const h = H[i];
+      if (h < 0) {
+        const need = -h;
+        const sh = M[i] < D.lpEntry ? { gp: 1, lp1: 0, lp2: 0 } : { gp: 0, lp1: 2 / 3, lp2: 1 / 3 };
+        for (const k in sh) { const a = need * sh[k]; b1[k] += a; b2[k] += a; cfOf(k)[i] -= a; }
+      } else if (h > 0) {
+        let rem = h; const d = {};
+        d.lp1 = Math.min(b1.lp1, caps.lp1 * h); rem -= d.lp1;
+        d.lp2 = Math.min(b1.lp2, Math.min(caps.lp2 * h, rem)); rem -= d.lp2;
+        d.gp = Math.min(b1.gp, rem); rem -= d.gp;
+        for (const k of ['lp1', 'lp2', 'gp']) { const e = Math.min(b1[k] - d[k], rem); d[k] += e; rem -= e; }
+        for (const k of ['lp1', 'lp2', 'gp']) { b1[k] -= d[k]; b2[k] -= d[k]; cfOf(k)[i] += d[k]; }
+        for (const k of ['lp2', 'gp', 'lp1']) {
+          if (rem <= 0) break;
+          const cu = Math.min(Math.max(b2[k], 0), rem); b2[k] -= cu; rem -= cu; cfOf(k)[i] += cu;
+        }
+        if (rem > 0) { lp1cf[i] += rem * pp.lp1; lp2cf[i] += rem * pp.lp2; gpcf[i] += rem * pp.gp; }
+      }
+    }
+    return { lp: add(lp1cf, lp2cf), gp: gpcf };
+  }
+
+  const DEFAULTS = { resiPrice: C.resiBasePrice, area: C.areaBase, cap: C.capBase, adr: 4736,
+    occ: 0.70, ltv: C.ltvBase, capexOver: 0, rate: C.rateBase, margin: C.marginBase, vel: C.velBase,
+    kz: 0, kp: 0, kcr: 0, kch: 0, hold: 0,
+    pref1: 0.10, pref2: 0.15, promote: 1 / 3, lp1: 0.5, lp2: 0.25, gp: 0.25 };
+  const [PB, MB] = buildProject(DEFAULTS);
+  const T_BASE = T(PB, MB);
+  const WF_BASE = W(D.holdBase, 0.10, 0.15, 1 / 3, 0.5, 0.25, 0.25);
+
+  function run(pIn) {
+    const p = Object.assign({}, DEFAULTS, pIn);
+    const [Pn, mir] = buildProject(p);
+    const Tn = T(Pn, mir);
+    const Hn = D.holdBase.map((x, i) => x + Tn[i] - T_BASE[i]);
+    const kzs = (p.kz|0) + (p.kp|0);
+    if (kzs > 0){ // deferred 5M D1 payment tracks the new-zoning date
+      const j = Math.min(C.iZonPay + kzs, N - 1);
+      Hn[C.iZonPay] += C.d1Defer; Hn[j] -= C.d1Defer;
+    }
+    const wfn = W(Hn, p.pref1, p.pref2, p.promote, p.lp1, p.lp2, p.gp);
+    const res = {};
+    for (const [party, baseCf] of [['lp', D.lpBase], ['gp', D.gpBase]]) {
+      const cf = baseCf.map((x, i) => x + wfn[party][i] - WF_BASE[party][i]);
+      if (party === 'lp' && kzs > 0){
+        const j = Math.min(C.iZonPay + kzs, N - 1);
+        cf[C.iZonPay] += C.d1Defer; cf[j] -= C.d1Defer;
+      }
+      const pe = peakEquity(cf), profit = sum(cf);
+      res[party] = { cf, irr: xirr(cf), profit, pe, em: pe ? 1 + profit / pe : NaN };
+    }
+    // tax breakdown (project level, 100%)
+    {
+      const ar2 = (p.resiPrice / C.resiBasePrice) * (p.area / C.areaBase);
+      const ah2 = (1 + noiPctFrom(p.adr, p.occ)) * ((p.margin || C.marginBase) / C.marginBase);
+      const sale2 = ah2 * C.noiExitBase * Math.pow(1.025, p.hold / 12) / p.cap * 0.99;
+      const basisTot2 = D.capexBasis.reduce((a, b) => a + Math.abs(b), 0);
+      const shield2 = p.capexOver * C.capexKappa * basisTot2 * 0.45 * C.cgt;
+      const tax = {
+        betterment: C.bettermentTot,
+        resi: Math.max(0, C.taxResiBase + C.cgt * (ar2 - 1) * C.resiSalesTot - shield2),
+        hotel: Math.max(0, C.cgt * (sale2 - C.hotelBook)),
+      };
+      tax.total = tax.betterment + tax.resi + tax.hotel;
+      res.tax = tax;
+    }
+    const pe = peakEquity(Hn), profit = sum(Hn);
+    res.holdco = { cf: Hn, irr: xirr(Hn), profit, pe, em: pe ? 1 + profit / pe : NaN };
+    return res;
+  }
+  return { run, xirr, N, months: M, noiPctFrom };
+}
+
+
+const eng = makeEngine(DATA);
+
+const FX = DATA.const.fx;
+const S = id => document.getElementById(id);
+const inputs = ['adr','occ','margin','cap','hold','price','area','vel','rate','ltv','capex','kz','kcr','kch'];
+const DEFS = {adr:4736, occ:0.70, margin:20.2, cap:0.065, hold:0, price:180180, area:7230, vel:1, rate:0.0605, ltv:0.70, capex:0,
+              kz:0, kcr:0, kch:0};
+
+/* ============================== i18n ============================== */
+let LANG = 'he';
+const TXT = {
+h1: {he:'מודל כדאיות למשקיע LP<small>פרויקט מלון יוקרה ומגורים, ירושלים | כל הסכומים במיליוני ₪ | מקור: מודל ה-Underwriting המלא</small>',
+     en:'LP Investment Feasibility Model<small>Luxury Hotel &amp; Residences, Jerusalem | All figures in ILS millions | Source: full underwriting model</small>'},
+badge:{he:'Base Case מעוגן למודל המלא: LP ‏28.4% | ‏×3.08 · מלון בהתייצבות (שנה 4): ‏70% / ‏4,736 ₪', en:'Base anchored to the full model: LP 28.4% | 3.08x · Hotel at stabilization (Y4): 70% / ₪4,736'},
+quick:{he:'תרחישים מהירים', en:'Quick Scenarios'},
+chipBase:{he:'תרחיש בסיס', en:'Base Case'}, chipUp:{he:'אופטימי', en:'Optimistic'}, chipDw1:{he:'שמרני', en:'Conservative'}, chipDw2:{he:'Downside', en:'Downside'},
+gHotel:{he:'מלון <span class="mini">ADR · תפוסה · Cap · החזקה</span>', en:'Hotel <span class="mini">ADR · Occupancy · Cap · Hold</span>'},
+lAdr:{he:'ADR בשנת ההתייצבות — שנה 4 (₪ ללילה)', en:'ADR at Stabilization — Year 4 (₪/night)'},
+sAdr:{he:'בסיס: ‏4,736 ₪ בשנת ההתייצבות — השנה הרביעית לתפעול (‏2033; פתיחה ‏03/2030). ‏88 חדרים.', en:'Base: ₪4,736 at stabilization — the fourth operating year (2033; opening 03/2030). 88 keys.'},
+lOcc:{he:'תפוסה בשנת ההתייצבות — שנה 4', en:'Occupancy at Stabilization — Year 4'},
+sOcc:{he:'בסיס: ‏70% בשנת ההתייצבות (שנה 4, ‏2033), לאחר רמפה של ‏4 שנים מהפתיחה. ההשפעה על NOI מכוילת מדוח רווח-הפסד שנת ההתייצבות.', en:'Base: 70% at stabilization (Year 4, 2033), after a four-year ramp from opening. NOI impact calibrated from the stabilization-year P&amp;L.'},
+lMargin:{he:'מרווח NOI (שנה מייצגת)', en:'NOI Margin (stabilized year)'},
+sMargin:{he:'בסיס: ‏20.2% — ‏NOI ‏33.1מ\' ₪ מפדיון ‏163.8מ\' ₪ בשנת ההתייצבות (שנה 4). משפיע על התפעול, שווי היציאה והמימון-מחדש.', en:'Base: 20.2% — NOI ₪33.1m on ₪163.8m revenue at stabilization (Year 4). Affects operations, exit value and refinancing.'},
+lVel:{he:'קצב מכירת דירות (יח\' לחודש)', en:'Sales Velocity (units/month)'},
+sVel:{he:'בסיס: ‏1 לחודש (‏18 יח\', מכירות מ-‏40 ח\' לפני המסירה). תקבולי טרום-מסירה מוחזקים ב-Escrow עד המסירה — לכן מעל ‏0.45 (כל היחידות נמכרות בזמן) אין השפעה תזרימית; מתחת לכך יחידות נמכרות ומשולמות לאחר המסירה והתשואה נפגעת.', en:'Base: 1/month (18 units, sales from 40 months pre-delivery). Pre-delivery receipts sit in escrow until delivery — so above 0.45 (all units sold in time) there is no cash-flow impact; below it, remaining units sell and pay after delivery, reducing returns.'},
+lCap:{he:'Cap Rate ליציאה', en:'Exit Cap Rate'},
+sCap:{he:'בסיס: ‏6.5%. שווי היציאה מחושב על ‏NOI שנת המכירה במודל המלא (בסיס: ‏403מ\' ₪ נטו, ‏09/2036), ומגיב ל-Cap ולביצועי המלון.', en:'Base: 6.5%. Exit value is computed on the sale-year NOI of the full model (base: ₪403m net, 09/2036), responsive to cap and hotel performance.'},
+lHold:{he:'תקופת החזקה (שינוי ממועד היציאה)', en:'Hold Period (vs. base exit date)'},
+sHold:{he:'בסיס: יציאה ‏09/2036. הארכה = ‏NOI נוסף וצמיחת שווי; קיצור = יציאה מוקדמת.', en:'Base exit: 09/2036. Longer hold adds NOI &amp; value growth; shorter = earlier exit.'},
+gResi:{he:'מגורים <span class="mini">מחיר · שטח מכיר</span>', en:'Residential <span class="mini">Price · Sellable Area</span>'},
+lPrice:{he:'מחיר מכירה (₪/מ"ר, כולל מע"מ)', en:'Sale Price (₪/sqm, incl. VAT)'},
+sPrice:{he:'בסיס: ‏180,180 ₪ (שווה ערך ל-$60,000). ‏18 יח\' יוקרה.', en:'Base: ₪180,180 (≈$60,000). 18 luxury units.'},
+lArea:{he:'שטח מכיר (מ"ר)', en:'Sellable Area (sqm)'},
+sArea:{he:'בסיס: ‏7,230 מ"ר.', en:'Base: 7,230 sqm.'},
+gFin:{he:'מימון ועלויות <span class="mini">ריבית · LTV · Capex</span>', en:'Financing &amp; Costs <span class="mini">Rate · LTV · Capex</span>'},
+lRate:{he:'עלות מימון בנקאי (שנתי, All-in)', en:'Bank Financing Cost (annual, all-in)'},
+sRate:{he:'בסיס: ‏6.05% (בסיס ‏4% + מרווח ‏2.05%). חל על כל מסגרות האשראי: רכישה, בנייה, מע"מ ומימון-מחדש (ריביות ועמלות בבסיס: ‏158מ\' ₪).', en:'Base: 6.05% (4% base + 2.05% margin). Applies to all facilities: acquisition, construction, VAT and refinancing (base interest &amp; fees: ₪158m).'},
+lLtv:{he:'מימון-מחדש LTV (מלון, ‏2030)', en:'Refinancing LTV (hotel, 2030)'},
+sLtv:{he:'בסיס: ‏70% משווי מייצב (‏228מ\' ₪). מחזיר את הלוואות הבנייה.', en:'Base: 70% of stabilized value (₪228m). Repays construction facilities.'},
+lCapex:{he:'חריגת Capex', en:'Capex Overrun'},
+sCapex:{he:'בסיס: ‏0%. תקציב פיתוח כולל: ‏487מ\' ₪ (כולל בצ"מ).', en:'Base: 0%. Total development budget: ₪487m (incl. contingency).'},
+gTime:{he:'לוחות זמנים <span class="mini">תב"ע · היתר · מסירות</span>', en:'Timeline <span class="mini">Zoning · Permit · Delivery</span>'},
+lKz:{he:'עיכוב סטטוטורי — תב"ע והיתר (חודשים)', en:'Statutory Delay — Zoning &amp; Permit (months)'},
+sKz:{he:'דוחה את שרשרת המגורים כולה (בנייה, מכירות והיטל השבחה) ומוסיף עלויות נשיאה. עיכוב קצר (עד ~4 ח\') עשוי לשפר מעט את שיא ההון בזכות פיזור מול בניית המלון; עיכוב מתמשך שוחק את התשואה.', en:'Shifts the entire residential chain (construction, sales, betterment levy) and adds carry costs. A short delay (up to ~4 mo) may slightly lower peak equity via staggering against the hotel build; a prolonged delay erodes returns.'},
+lKcr:{he:'עיכוב מסירת מגורים', en:'Residential Delivery Delay'},
+sKcr:{he:'בסיס: ‏09/2031. חריגת בנייה — דוחה שחרור Escrow ותקבולים + ריבית נוספת.', en:'Base: 09/2031. Construction overrun — delays escrow release &amp; proceeds, adds interest.'},
+lKch:{he:'עיכוב מסירת מלון', en:'Hotel Delivery Delay'},
+sKch:{he:'בסיס: ‏03/2030. דוחה פתיחה, מימון-מחדש ויציאה + ריבית נוספת.', en:'Base: 03/2030. Delays opening, refinancing and exit, adds interest.'},
+gTerms:{he:'מבנה העסקה <span class="mini">לפי ההצעה — קבוע</span>', en:'Deal Structure <span class="mini">per term sheet — fixed</span>'},
+terms:{he:[['הזרמות הון','‏75% ‏LP / ‏25% ‏GP'],['בעלות אפקטיבית','‏50% ‏LP / ‏50% ‏GP'],
+  ['1. החזר ההון המושקע','למשקיעים'],['2. ‏Pari Passu על ההון','עד ‏10% ‏IRR'],
+  ['3. על ההון העודף (‏25%) שמימן ה-LP','‏15% ‏IRR'],['4. ‏Catch-Up ‏LP ‏ו-GP','עד ‏15% ‏IRR'],
+  ['5. יתרת הרווח לפי בעלות','‏50/50']],
+ en:[['Contribution split','75% LP / 25% GP'],['Effective ownership','50% LP / 50% GP'],
+  ['1. Return of invested equity','to Investors'],['2. Pari passu on capital','up to 10% IRR'],
+  ['3. On the extra 25% funded by LP','15% IRR'],['4. LP &amp; GP catch-up','to 15% IRR'],
+  ['5. Remaining profit by ownership','50/50']]},
+reset:{he:'↺ איפוס ל-Base Case', en:'↺ Reset to Base Case'},
+hIrr:{he:'LP IRR (שנתי)', en:'LP IRR (annual)'},
+hEm:{he:'מכפיל הון LP', en:'LP Equity Multiple'},
+hProfit:{he:"רווח נקי LP (מ' ₪)", en:'LP Net Profit (₪m)'},
+hPe:{he:"הון מושקע שיא LP (מ' ₪)", en:'LP Peak Equity (₪m)'},
+secPayback:{he:'החזר הקרן המלא צפוי עד', en:'Full capital back expected by'},
+secDist:{he:'סה"כ חלוקות צפויות ל-LP', en:'Total Expected Distributions to LP'},
+secExit:{he:'שווי יציאה מלון | מכירות מגורים', en:'Hotel Exit Value | Residential Sales'},
+chCf:{he:"תזרים LP שנתי (מ' ₪)", en:'Annual LP Cash Flow (₪m)'},
+chCum:{he:"תזרים LP מצטבר (מ' ₪)", en:'Cumulative LP Cash Flow (₪m)'},
+taxTitle:{he:'מיסוי — לפי התרחיש הנוכחי (רמת הפרויקט, ‏100%)', en:'Taxation — current scenario (project level, 100%)'},
+taxH1:{he:'רכיב מס', en:'Tax component'}, taxH2:{he:'בסיס', en:'Base'},
+taxH3:{he:'תרחיש נוכחי', en:'Current scenario'}, taxH4:{he:'הערה', en:'Note'},
+taxBet:{he:'היטל השבחה', en:'Betterment levy'},
+taxBetN:{he:'קבוע (‏10 מלון + ‏37.9 מגורים); עיתוי נדחה עם דחיית תב"ע', en:'Fixed (10 hotel + 37.9 residential); timing shifts with zoning delay'},
+taxResi:{he:'מס שבח / חברות — מגורים', en:'Land appreciation / corporate tax — residential'},
+taxResiN:{he:'‏23% על הרווח; כל תוספת זכויות/מחיר מגדילה אותו, חריגת Capex מקטינה', en:'23% of profit; more rights/price increases it, capex overrun reduces it'},
+taxHot:{he:'מס רווח הון — מכירת המלון', en:'Capital gains tax — hotel sale'},
+taxHotN:{he:'‏23% על שווי היציאה מעל עלות מופחתת (‏336.7מ\' ₪)', en:'23% of exit value above depreciated cost (₪336.7m)'},
+taxTot:{he:'סה"כ מסים (מ\' ₪)', en:'Total taxes (₪m)'},
+taxScope:{he:'הטבלה מציגה את מסי הפרויקט לאורך כל חייו (2026–2036). אינה כוללת מסי רכישה (~7.7מ\' ₪) הכלולים בעלויות הרכישה והסגירה.', en:'Lifetime project taxes (2026–2036). Excludes purchase taxes (~₪7.7m) which are part of acquisition & closing costs.'},
+taxSame:{he:'זהה לבסיס', en:'Same as base'},
+taxDelta:{he:" מ' ₪ מול הבסיס — משתקף בתזרים ובתשואה", en:'₪m vs. base — reflected in cash flow and returns'},
+tlTitle:{he:'ציר הפרויקט — אבני דרך', en:'Project Timeline — Key Milestones'},
+tlToday:{he:'היום', en:'Today'},
+tlSales:{he:'תחילת מכירות מוקדמות', en:'Pre-sales launch'},
+tlHotel:{he:'פתיחת המלון', en:'Hotel opening'},
+tlResi:{he:'מסירת דירות ושחרור Escrow', en:'Resi delivery & escrow release'},
+tlExit:{he:'מכירת המלון ויציאה', en:'Hotel sale & exit'},
+suTitle:{he:'תמונת הפרויקט — בסיס מול התרחיש שלך', en:'Project Snapshot — Base vs. Your Scenario'},
+suBaseH:{he:'תרחיש הבסיס', en:'Base Case'},
+suYouH:{he:'התרחיש שלך', en:'Your Scenario'},
+suUsesH:{he:'עלות הפרויקט (מ\' ₪)', en:'PROJECT COSTS (₪m)'},
+suAcq:{he:'רכישת הנכסים ועלויות סגירה (רמת הפרויקט)', en:'Asset acquisition & closing costs (project level)'},
+suDev:{he:'פיתוח ובנייה (כולל בצ"מ)', en:'Development & construction (incl. contingency)'},
+suBet:{he:'היטל השבחה', en:'Betterment levy'},
+suFin:{he:'עלויות מימון — ריבית ועמלות', en:'Financing costs — interest & fees'},
+suUsesT:{he:'סה"כ עלות', en:'Total cost'},
+suSrcH:{he:'הכנסות הפרויקט (מ\' ₪)', en:'PROJECT REVENUES (₪m)'},
+suResi:{he:'מכירת 18 דירות היוקרה', en:'Sale of 18 luxury residences'},
+suHotel:{he:'מכירת המלון', en:'Hotel sale'},
+suNoi:{he:'NOI מצטבר בתקופת ההחזקה', en:'Cumulative NOI over hold'},
+suOther:{he:'דמי מפתח ומענקים', en:'Key money & grants'},
+suSrcT:{he:'סה"כ הכנסות', en:'Total revenues'},
+scenTitle:{he:'השוואת תרחישים — מה מקבל המשקיע בכל תרחיש', en:'Scenario Comparison — what the investor receives'},
+scenNote:{he:'מחושב חי מהמודל המלא. "התרחיש שלך" משקף את הקלטים הנוכחיים בסליידרים.', en:'Computed live from the full model. "Your Scenario" reflects the current slider inputs.'},
+scYou:{he:'התרחיש שלך', en:'Your Scenario'},
+scYouSub:{he:'לפי הקלטים הנוכחיים בסליידרים', en:'Based on current slider inputs'},
+scUp:{he:'אופטימי', en:'Optimistic'},
+scUpSub:{he:'מחיר ‏216 א\' ₪/מ"ר · ‏Cap ‏6% · תפוסה ‏75%', en:'Price ₪216k/sqm · 6% cap · 75% occupancy'},
+scBase:{he:'תרחיש הבסיס', en:'Base Case'},
+scBaseSub:{he:'הנחות מודל ה-Underwriting', en:'Underwriting model assumptions'},
+scDw1:{he:'שמרני', en:'Conservative'},
+scDw1Sub:{he:'מחיר ‏−13% · ‏Cap ‏7.25% · תפוסה ‏62% · עיכובים', en:'Price −13% · 7.25% cap · 62% occupancy · delays'},
+scDw2:{he:'Downside', en:'Downside'},
+scDw2Sub:{he:'מחיר ‏−25% · ‏Cap ‏9% · תפוסה ‏55% · ‏Capex ‏+10% · עיכובים', en:'Price −25% · 9% cap · 55% occupancy · capex +10% · delays'},
+scIrrSub:{he:'תשואה שנתית למשקיע (IRR)', en:'Annual investor return (IRR)'},
+scPerM:{he:"כל ‏1 מ' ₪ הופך ל-", en:'Every ₪1m becomes'},
+scProfit:{he:'רווח נקי למשקיעים', en:'Net profit to investors'},
+scPayback:{he:'החזר הקרן צפוי עד', en:'Capital back by'},
+mIls:{he:" מ' ₪", en:'m'},
+vsBase:{he:' מול Base', en:' vs Base'},
+eqBase:{he:'= Base', en:'= Base'},
+pp:{he:' נ"א', en:'pp'},
+mo:{he:" ח'", en:' mo'},
+sqm:{he:' מ"ר', en:' sqm'},
+ils:{he:' ₪', en:''},
+foot:{he:'<b>אודות המודל:</b> החישוב מבוסס על מודל ה-Underwriting המלא של הפרויקט — תזרים חודשי (8/2025–2042) הכולל את מבנה המימון, מיסוי, מנגנון ה-Escrow במכירות המגורים, מימון-מחדש של המלון ומפל החלוקה בין השותפים בהתאם לתנאי העסקה. תרחיש הבסיס משקף את תוצאות המודל המלא למשקיע, בשילוב עדכון פריסת התשלום עבור מניות המגורים (31 מ\' ₪ ב-11/2026 ו-5 מ\' ₪ במועד קבלת התב"ע החדשה, מוערך 01/2028): LP ‏28.37% / ‏×3.08. הנחות המלון מוצגות לשנת ההתייצבות — השנה הרביעית לתפעול (2033): תפוסה ‏70%, ‏ADR ‏4,736 ₪, ‏NOI ‏33.1מ\' ₪; רגישות הסליידרים מכוילת מדוח הרווח-וההפסד של שנת ההתייצבות; דחיות לו"ז משנות את עיתוי התזרימים בפועל בתוספת עלויות מימון. הנתונים להמחשה בלבד ואינם מהווים ייעוץ השקעות או הצעה לציבור.',
+ en:'<b>About the model:</b> Calculations are based on the project\'s full underwriting model — a monthly cash flow (8/2025–2042) covering the financing structure, taxation, the residential sales escrow mechanism, hotel refinancing and the partner distribution waterfall per the deal terms. The base case reflects the full model\'s outputs, incorporating the updated payment schedule for the residential shares (₪31m at 11/2026 and ₪5m upon receipt of the new zoning plan, est. 01/2028): LP 28.37% / 3.08x. Hotel assumptions are stated for the stabilization year — the fourth operating year (2033): 70% occupancy, ₪4,736 ADR, ₪33.1m NOI; slider sensitivities are calibrated from the stabilization-year P&amp;L; timeline delays shift the actual cash-flow timing plus financing carry costs. For illustration only; not investment advice or a public offering.'},
+};
+const t = k => TXT[k][LANG];
+const LOC = () => LANG==='he' ? 'he-IL' : 'en-US';
+
+function applyLang(){
+  document.documentElement.setAttribute('lang', LANG);
+  document.documentElement.setAttribute('dir', LANG==='he' ? 'rtl' : 'ltr');
+  document.querySelectorAll('[data-t]').forEach(el => { el.innerHTML = t(el.dataset.t); });
+  const tm = S('terms');
+  if (tm) tm.innerHTML = TXT.terms[LANG].map(([a,b])=>`<div class="trow"><span>${a}</span><span>${b}</span></div>`).join('');
+  S('lang-he').classList.toggle('on', LANG==='he');
+  S('lang-en').classList.toggle('on', LANG==='en');
+}
+
+/* ============================== engine glue ============================== */
+function params(){
+  const g = k => +S('i-'+k).value;
+  return {
+    adr: g('adr'), occ: g('occ'), margin: Math.round(g('margin')*10)/1000, cap: g('cap'), hold: g('hold'),
+    resiPrice: g('price')/FX, area: g('area'), vel: g('vel'), rate: g('rate'), ltv: g('ltv'), capexOver: g('capex'),
+    kz: g('kz'), kp: 0, kcr: g('kcr'), kch: g('kch'),
+  };
+}
+const fmtPct = x => isFinite(x) ? (x*100).toLocaleString(LOC(),{maximumFractionDigits:1})+'%' : '—';
+const fmtPct2 = x => isFinite(x) ? (x*100).toFixed(2)+'%' : '—';
+const fmtM = x => isFinite(x) ? (x/1e6).toLocaleString(LOC(),{maximumFractionDigits:0}) : '—';
+const fmtX = x => isFinite(x) ? (LANG==='he' ? '×'+x.toFixed(2) : x.toFixed(2)+'x') : '—';
+const ilsAmt = x => LANG==='he' ? x.toLocaleString('he-IL')+' ₪' : '₪'+x.toLocaleString('en-US');
+const mIls = x => LANG==='he' ? fmtM(x)+" מ' ₪" : '₪'+fmtM(x)+'m';
+function monthName(baseSerial, plusMonths){
+  const d = new Date(1899,11,30);
+  d.setDate(d.getDate()+baseSerial);
+  d.setMonth(d.getMonth()+plusMonths);
+  return String(d.getMonth()+1).padStart(2,'0')+'/'+d.getFullYear();
+}
+let baseRes = null;
+
+function delta(el, cur, base, fmt, invert=false){
+  const d = cur-base, e = S(el);
+  if (Math.abs(d) <= Math.abs(base)*1e-8 + 1e-9){ e.textContent=t('eqBase'); e.className='d zero'; return; }
+  e.textContent = (d>0?'+':'−') + fmt(Math.abs(d)) + t('vsBase');
+  e.className = 'd ' + ((d>0) !== invert ? 'pos' : 'neg');
+}
+function annualize(cf){
+  const byY = {};
+  for (let i=0;i<cf.length;i++){
+    const y = Math.floor((DATA.months[i]-2)/365.2425)+1900;
+    byY[y] = (byY[y]||0)+cf[i];
+  }
+  const ys = Object.keys(byY).map(Number).sort();
+  while (ys.length && Math.abs(byY[ys[ys.length-1]])<1e4) ys.pop();
+  return ys.map(y=>({y, v:byY[y]}));
+}
+function drawBars(svgId, ann){
+  const svg = S(svgId); const Wd=560, Hd=240, padL=8, padR=8, padT=14, padB=22;
+  const vals = ann.map(a=>a.v/1e6);
+  const mx = Math.max(...vals,0), mn = Math.min(...vals,0);
+  const y = v => padT + (mx-v)/(mx-mn||1)*(Hd-padT-padB);
+  const bw = (Wd-padL-padR)/ann.length;
+  let s = `<line x1="${padL}" y1="${y(0)}" x2="${Wd-padR}" y2="${y(0)}" stroke="#cbd5e1"/>`;
+  ann.forEach((a,i)=>{
+    const v=a.v/1e6, x=padL+i*bw, h=Math.abs(y(v)-y(0));
+    s+=`<rect x="${x+2}" y="${Math.min(y(v),y(0))}" width="${Math.max(bw-4,1)}" height="${Math.max(h,1)}" rx="2" fill="${v>=0?'#7f9db8':'#5e2c23'}" opacity="0.94"/>`;
+    if (Math.abs(v)>1 && bw>26) s+=`<text x="${x+bw/2}" y="${v>=0?y(v)-4:y(v)+12}" font-size="9.5" text-anchor="middle" fill="#475569">${v.toLocaleString('en',{maximumFractionDigits:0})}</text>`;
+    if (bw>18 || i%2===0) s+=`<text x="${x+bw/2}" y="${Hd-6}" font-size="9" text-anchor="middle" fill="#94a3b8">${String(a.y).slice(2)}'</text>`;
+  });
+  svg.innerHTML = s;
+}
+function drawCum(svgId, ann){
+  const svg = S(svgId); const Wd=560, Hd=240, padL=14, padR=40, padT=26, padB=24;
+  let c=0; const pts = ann.map(a=>{c+=a.v/1e6; return c;});
+  const mx=Math.max(...pts,0), mn=Math.min(...pts,0);
+  const y=v=>padT+(mx-v)/(mx-mn||1)*(Hd-padT-padB);
+  const x=i=>padL+i/(ann.length-1||1)*(Wd-padL-padR);
+  let path = pts.map((p,i)=>(i?'L':'M')+x(i).toFixed(1)+','+y(p).toFixed(1)).join(' ');
+  let area = path + ` L${x(pts.length-1)},${y(0)} L${x(0)},${y(0)} Z`;
+  let s = `<line x1="${padL}" y1="${y(0)}" x2="${Wd-padR+26}" y2="${y(0)}" stroke="#ded4cb"/>`;
+  s += `<path d="${area}" fill="#7f9db81a"/><path d="${path}" fill="none" stroke="#5e2c23" stroke-width="2.5"/>`;
+  ann.forEach((a,i)=>{ s+=`<text x="${x(i)}" y="${Hd-6}" font-size="9" text-anchor="middle" fill="#9a8f89">${String(a.y).slice(2)}'</text>`; });
+  const fmtL = v => v.toLocaleString('en',{maximumFractionDigits:0});
+  const li = pts.length-1;
+  pts.forEach((p,i)=>{
+    const changed = i===0 || Math.abs(p-pts[i-1]) > 0.5;
+    if (!changed || i===li) return;
+    const goingUp = i===0 ? (pts[1]||p) >= p : p >= pts[i-1];
+    s += `<circle cx="${x(i)}" cy="${y(p)}" r="3.2" fill="#fff" stroke="#5e2c23" stroke-width="1.8"/>`;
+    const ty = goingUp ? y(p)+16 : y(p)-9;
+    const tyC = Math.max(padT-12, Math.min(Hd-padB-4, ty));
+    const txC = Math.max(padL+12, Math.min(Wd-18, x(i)));
+    s += `<text x="${txC}" y="${tyC}" font-size="10" font-weight="700" text-anchor="middle" fill="#2b2320" direction="ltr">${fmtL(p)}</text>`;
+  });
+  const last = pts[li];
+  s += `<circle cx="${x(li)}" cy="${y(last)}" r="4" fill="#7f9db8" stroke="#5e2c23" stroke-width="1.5"/>`;
+  s += `<text x="${Math.min(x(li)+4, Wd-2)}" y="${y(last)-10}" font-size="11.5" font-weight="700" text-anchor="end" fill="#5e2c23" direction="ltr">${fmtL(last)}</text>`;
+  svg.innerHTML = s;
+}
+function serialIdx(serial){
+  const d = new Date(1899,11,30); d.setDate(d.getDate()+serial);
+  return d.getFullYear()*12 + d.getMonth();
+}
+function idxLabel(mi){
+  const y = Math.floor(mi/12), m = mi%12 + 1;
+  return String(m).padStart(2,'0')+'/'+y;
+}
+function drawTL(){
+  const kz=+S('i-kz').value, kcr=+S('i-kcr').value, kch=+S('i-kch').value, hold=+S('i-hold').value;
+  const today = 2026*12+6;
+  const pts = [
+    {mi: today,                        lab: t('tlToday'),  now:true},
+    {mi: serialIdx(48121)-40+kz+kcr,   lab: t('tlSales')},
+    {mi: serialIdx(47573)+kch,         lab: t('tlHotel')},
+    {mi: serialIdx(48121)+kz+kcr,      lab: t('tlResi')},
+    {mi: serialIdx(49948)+hold+kch,    lab: t('tlExit')},
+  ].sort((a,b)=>a.mi-b.mi);
+  const Wd=1120, padL=46, padR=52, yL=56;
+  const m0=pts[0].mi-3, m1=pts[pts.length-1].mi+3;
+  const x = mi => padL + (mi-m0)/(m1-m0)*(Wd-padL-padR);
+  let s = `<line x1="${padL-14}" y1="${yL}" x2="${Wd-padR+14}" y2="${yL}" stroke="#e6ddd6" stroke-width="2"/>`;
+  pts.forEach((pt,i)=>{
+    const px=x(pt.mi), up = i%2===0;
+    if (pt.now){
+      s += `<path d="M${px},${yL-7} L${px+6},${yL} L${px},${yL+7} L${px-6},${yL} Z" fill="#7f9db8"/>`;
+    } else {
+      s += `<circle cx="${px}" cy="${yL}" r="5.5" fill="#5e2c23" stroke="#fff" stroke-width="1.5"/>`;
+    }
+    const ty1 = up ? yL-26 : yL+26, ty2 = up ? yL-13 : yL+39;
+    s += `<text x="${px}" y="${ty1}" font-size="11.5" font-weight="700" text-anchor="middle" fill="${pt.now?'#7f9db8':'#5e2c23'}">${pt.lab}</text>`;
+    s += `<text x="${px}" y="${ty2}" font-size="10.5" text-anchor="middle" fill="#7a6f6a" direction="ltr">${idxLabel(pt.mi)}</text>`;
+  });
+  S('ch-tl').innerHTML = s;
+}
+function paybackYear(cf){
+  let cum = 0, peaked = false;
+  for (let i=0;i<cf.length;i++){
+    cum += cf[i];
+    if (cum < -1e5) peaked = true;
+    if (peaked && cum >= 0) return Math.floor((DATA.months[i]-2)/365.2425)+1900;
+  }
+  return null;
+}
+function scenCard(title, sub, r, color, extraCls){
+  const perM = isFinite(r.lp.em) ? r.lp.em : null;
+  const pb = paybackYear(r.lp.cf);
+  const perMs = perM ? (LANG==='he' ? perM.toFixed(2)+" מ' ₪" : '₪'+perM.toFixed(2)+'m') : '—';
+  return `<div class="scen ${extraCls||''}">
+    <div class="head" style="background:${color}">${title}<small>${sub}</small></div>
+    <div class="body">
+      <div class="irr">${fmtPct2(r.lp.irr)}<small>${t('scIrrSub')}</small></div>
+      <div class="m"><span>${t('scPerM')}</span><b>${perMs}</b></div>
+      <div class="m"><span>${t('scProfit')}</span><b>${mIls(r.lp.profit)}</b></div>
+      <div class="m"><span>${t('scPayback')}</span><b>${pb || '—'}</b></div>
+    </div></div>`;
+}
+function buildScenarios(p, rCur){
+  const defs = [
+    [t('scYou'), t('scYouSub'), null, '#7f9db8', 'you'],
+    [t('scUp'), t('scUpSub'), SCEN.up, '#4f7396', ''],
+    [t('scBase'), t('scBaseSub'), SCEN.base, '#5e2c23', ''],
+    [t('scDw1'), t('scDw1Sub'), SCEN.dw1, '#8a5a50', ''],
+    [t('scDw2'), t('scDw2Sub'), SCEN.dw2, '#3f1d17', ''],
+  ];
+  let html = '';
+  for (const [title, sub, s, color, cls] of defs){
+    let r;
+    if (s === null) r = rCur;
+    else {
+      const q = {};
+      const full = Object.assign({}, DEFS, s);
+      q.resiPrice = full.price/FX; q.cap = full.cap; q.adr = full.adr; q.occ = full.occ;
+      q.capexOver = full.capex; q.kz = full.kz; q.kp = 0; q.kcr = full.kcr; q.kch = full.kch;
+      q.ltv = full.ltv; q.area = full.area; q.hold = full.hold; q.rate = full.rate; q.margin = full.margin/100; q.vel = full.vel;
+      r = eng.run(q);
+    }
+    html += scenCard(title, sub, r, color, cls);
+  }
+  S('scen-grid').innerHTML = html;
+}
+const SU_BASE = {dev:486.6, bet:47.9, fin:159.9, resi:1116.6, hotel:403.2, noi:123.0, acq:62.1, key:38.0, int:129.6, kappaBasis:0.626*401.4};
+function suCell(id, base, cur){
+  const f = x => x.toLocaleString('en-US',{minimumFractionDigits:1, maximumFractionDigits:1});
+  S(id).innerHTML = Math.abs(cur-base) < 0.05 ? f(base)
+    : '<b style="color:var(--oxblood)">'+f(cur)+'</b>';
+}
+function updateSU(p, r, saleNew, resiTot, noiPct){
+  const aH = (1+noiPct)*(p.margin/DATA.const.marginBase);
+  const dev = SU_BASE.dev + p.capexOver*SU_BASE.kappaBasis;
+  const bet = r.tax.betterment/1e6;
+  const fin = SU_BASE.fin + (p.rate/DATA.const.rateBase - 1)*SU_BASE.int
+            + ((p.kcr*223.33 + p.kz*48.36 + p.kch*258.0) * p.rate/12);
+  let noi = SU_BASE.noi*aH;
+  if (p.hold > 0){ for (let m=1;m<=p.hold;m++) noi += (DATA.const.stabNoiM/1e6)*aH*Math.pow(1.025, m/12); }
+  else if (p.hold < 0){ noi -= (DATA.const.stabNoiM/1e6)*aH*(-p.hold); }
+  suCell('su-dev', SU_BASE.dev, dev);
+  suCell('su-bet', SU_BASE.bet, bet);
+  suCell('su-fin', SU_BASE.fin, fin);
+  suCell('su-uses-t', SU_BASE.acq+SU_BASE.dev+SU_BASE.bet+SU_BASE.fin, SU_BASE.acq+dev+bet+fin);
+  suCell('su-resi', SU_BASE.resi, resiTot/1e6);
+  suCell('su-hotel', SU_BASE.hotel, saleNew/1e6);
+  suCell('su-noi', SU_BASE.noi, noi);
+  suCell('su-src-t', SU_BASE.resi+SU_BASE.hotel+SU_BASE.noi+SU_BASE.key, resiTot/1e6+saleNew/1e6+noi+SU_BASE.key);
+}
+function markChanged(){
+  for (const k of inputs){
+    const el = S('c-'+k);
+    if (el) el.classList.toggle('changed', Math.abs(+S('i-'+k).value - DEFS[k]) > 1e-6);
+  }
+}
+let sensTimer = null;
+function recalc(){
+  const p = params();
+  S('v-adr').textContent = ilsAmt(+S('i-adr').value);
+  S('v-occ').textContent = fmtPct(+S('i-occ').value);
+  S('v-margin').textContent = (+S('i-margin').value).toFixed(1)+'%';
+  { const vv=+S('i-vel').value, post=Math.max(0, Math.ceil(18-40*vv));
+    S('v-vel').textContent = vv.toFixed(2) + (post>0 ? (LANG==='he'?' · '+post+' יח\' אחרי המסירה':' · '+post+' units post-delivery')
+                                                    : (LANG==='he'?' · הכל לפני המסירה':' · all pre-delivery')); }
+  S('v-cap').textContent = fmtPct2(+S('i-cap').value);
+  const hold = +S('i-hold').value;
+  S('v-hold').textContent = (hold>0?'+':'')+hold+t('mo')+' → '+monthName(49948, hold + +S('i-kch').value);
+  S('v-price').textContent = ilsAmt(+S('i-price').value);
+  S('v-area').textContent = (+S('i-area').value).toLocaleString(LOC())+t('sqm');
+  S('v-rate').textContent = fmtPct2(+S('i-rate').value);
+  S('v-ltv').textContent = fmtPct(+S('i-ltv').value);
+  S('v-capex').textContent = '+'+fmtPct(+S('i-capex').value);
+  S('v-kz').textContent = '+'+S('i-kz').value+t('mo');
+  S('v-kcr').textContent = '+'+S('i-kcr').value+t('mo')+' → '+monthName(48121, +S('i-kcr').value + +S('i-kz').value);
+  S('v-kch').textContent = '+'+S('i-kch').value+t('mo')+' → '+monthName(47573, +S('i-kch').value);
+
+  const r = eng.run(p);
+  if (!baseRes) baseRes = eng.run({});
+  S('o-irr').textContent = fmtPct2(r.lp.irr);
+  S('o-em').textContent = fmtX(r.lp.em);
+  S('o-profit').textContent = fmtM(r.lp.profit);
+  S('o-pe').textContent = fmtM(r.lp.pe);
+  delta('d-irr', r.lp.irr, baseRes.lp.irr, x=>(x*100).toFixed(1)+t('pp'));
+  delta('d-em', r.lp.em, baseRes.lp.em, x=>fmtX(x));
+  delta('d-profit', r.lp.profit, baseRes.lp.profit, x=>mIls(x));
+  delta('d-pe', r.lp.pe, baseRes.lp.pe, x=>mIls(x), true);
+  S('o-payback').textContent = (function(){ let c=0,pk=false;
+    for (let i=0;i<r.lp.cf.length;i++){ c+=r.lp.cf[i]; if(c<-1e5)pk=true;
+      if(pk&&c>=0) return Math.floor((DATA.months[i]-2)/365.2425)+1900; } return '—'; })();
+  S('o-dist').textContent = mIls(r.lp.cf.reduce((a,b)=>a+(b>0?b:0),0));
+  const noiPct = eng.noiPctFrom(p.adr, p.occ);
+  const saleNew = (1+noiPct)*DATA.const.noiExitBase*Math.pow(1.025, p.hold/12)/p.cap*0.99;
+  const resiTot = DATA.const.resiSalesTot*(p.resiPrice/DATA.const.resiBasePrice)*(p.area/DATA.const.areaBase);
+  S('o-exit').textContent = fmtM(saleNew)+' | '+mIls(resiTot);
+  updateSU(p, r, saleNew, resiTot, noiPct);
+
+  const tM = x => (x/1e6).toLocaleString(LOC(),{minimumFractionDigits:1, maximumFractionDigits:1});
+  S('tx-bet').textContent = tM(r.tax.betterment);
+  S('tx-resi').textContent = tM(r.tax.resi);
+  S('tx-hotel').textContent = tM(r.tax.hotel);
+  S('tx-tot').textContent = tM(r.tax.total);
+  const dTax = r.tax.total - 246263000;
+  S('tx-note').textContent = Math.abs(dTax) < 5e5 ? t('taxSame') :
+    (dTax>0? '+' : '−') + tM(Math.abs(dTax)) + t('taxDelta');
+
+  const ann = annualize(r.lp.cf);
+  drawBars('ch-cf', ann);
+  drawCum('ch-cum', ann);
+  drawTL();
+  markChanged();
+  clearTimeout(sensTimer);
+  sensTimer = setTimeout(()=>buildScenarios(p, r), 120);
+}
+const SCEN = {
+  base:{},
+  up:  {price:216000, cap:0.06, adr:5100, occ:0.75, ltv:0.75},
+  dw1: {price:156000, cap:0.0725, adr:4200, occ:0.62, capex:0.05, kz:3, kcr:3},
+  dw2: {price:135000, cap:0.09, adr:3800, occ:0.55, capex:0.10, kz:6, kcr:6, kch:6},
+};
+function applyScen(s){
+  for (const k of inputs) S('i-'+k).value = (k in s) ? s[k] : DEFS[k];
+  recalc();
+}
+document.querySelectorAll('#chips .chip').forEach(ch=>{
+  ch.addEventListener('click', ()=>{
+    document.querySelectorAll('#chips .chip').forEach(c=>c.classList.remove('active'));
+    ch.classList.add('active');
+    applyScen(SCEN[ch.dataset.s]);
+  });
+});
+S('reset').addEventListener('click', ()=>{
+  document.querySelectorAll('#chips .chip').forEach(c=>c.classList.toggle('active', c.dataset.s==='base'));
+  applyScen({});
+});
+inputs.forEach(k=>S('i-'+k).addEventListener('input', ()=>{
+  document.querySelectorAll('#chips .chip').forEach(c=>c.classList.remove('active'));
+  recalc();
+}));
+function setLang(l){
+  LANG = l;
+  applyLang();
+  recalc();
+}
+S('lang-he').addEventListener('click', ()=>setLang('he'));
+S('lang-en').addEventListener('click', ()=>setLang('en'));
+applyLang();
+recalc();
+</script>
+</body>
+</html>

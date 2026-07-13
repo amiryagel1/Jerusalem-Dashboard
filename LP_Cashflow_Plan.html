@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>תוכנית תזרים למשקיע LP — פרויקט מלון ומגורים, ירושלים</title>
+<style>
+  :root{--bg:#faf8f5; --card:#ffffff; --ink:#2b2320; --muted:#7a6f6a; --line:#e6ddd6;
+    --oxblood:#5e2c23; --oxblood2:#4a221b; --azure:#adc4da; --azure2:#7f9db8;
+    --accent:#5e2c23; --accent2:#adc4da; --pos:#7f9db8; --neg:#5e2c23; --chip:#f2ece6;}
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{background:var(--bg); color:var(--ink);
+    font-family:Georgia,"Times New Roman","David",serif;
+    padding:0 22px 22px; max-width:1180px; margin:0 auto;}
+  .brandbar{background:var(--oxblood); margin:0 -22px 24px; padding:26px 36px;
+    display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:14px;}
+  .brand-logo{display:block; text-decoration:none;}
+  .brand-logo .wm{font-family:Georgia,"Times New Roman",serif; color:var(--azure);
+    font-size:30px; letter-spacing:10px; font-weight:400; line-height:1;}
+  .brand-logo .wm-sub{font-size:9.5px; letter-spacing:5px; color:var(--azure); opacity:.85; margin-top:7px; text-align:center;}
+  header{display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:10px; margin-bottom:18px;}
+  h1{font-size:27px; font-weight:400; color:var(--oxblood); font-family:Georgia,"Times New Roman",serif; letter-spacing:.5px;}
+  h1 small{display:block; font-size:12.5px; color:var(--muted); font-weight:400; margin-top:6px; letter-spacing:.4px;}
+  .langsw{display:flex; border:1px solid rgba(173,196,218,.5); border-radius:0; overflow:hidden; background:transparent;}
+  .langsw button{border:none; background:none; padding:6px 16px; font-size:12px; cursor:pointer;
+    color:var(--azure); font-family:inherit; letter-spacing:1px;}
+  .langsw button.on{background:var(--azure); color:var(--oxblood);}
+  .card{background:var(--card); border:1px solid var(--line); border-radius:2px; padding:22px 24px;
+    box-shadow:none; margin-bottom:18px;}
+  .card h2{font-size:16.5px; font-weight:400; color:var(--oxblood); margin-bottom:12px; letter-spacing:1px;
+    display:flex; align-items:center; gap:10px; font-family:Georgia,"Times New Roman",serif;}
+  .card h2::after{content:""; flex:1; height:1px; background:var(--line);}
+  .card .sub{font-size:11.5px; color:var(--muted); margin-top:-6px; margin-bottom:12px;}
+  .heroes{display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:18px;}
+  @media(max-width:760px){.heroes{grid-template-columns:repeat(2,1fr);}}
+  .hero{border-radius:2px; padding:20px 20px 16px; color:#fff; background:var(--oxblood);}
+  .hero.blue,.hero.red,.hero.green,.hero.gold{background:var(--oxblood);}
+  .hero .t{font-size:10.5px; letter-spacing:1.6px; text-transform:uppercase; color:var(--azure); margin-bottom:10px;}
+  .hero .v{font-size:31px; font-weight:400; direction:ltr; text-align:center; letter-spacing:0;
+    font-family:Georgia,"Times New Roman",serif; color:#fff;}
+  .hero .d{font-size:11px; margin-top:9px; color:var(--azure); opacity:.9; text-align:center;}
+  svg text{font-family:inherit;}
+  table.tbl{width:100%; border-collapse:collapse; font-size:12.5px;}
+  table.tbl th{background:var(--chip); font-weight:600; text-align:start; white-space:nowrap;}
+  table.tbl th,table.tbl td{border:1px solid var(--line); padding:7px 10px;}
+  table.tbl td.n{direction:ltr; text-align:center; font-variant-numeric:tabular-nums; white-space:nowrap;}
+  table.tbl tr.tot td{font-weight:700; background:var(--chip);}
+  .mile{display:flex; flex-wrap:wrap; gap:0; position:relative; margin-top:6px;}
+  .mrow{display:grid; grid-template-columns:110px 1fr; gap:12px; padding:9px 0; border-bottom:1px dashed var(--line); font-size:12.5px;}
+  .mrow:last-child{border-bottom:none;}
+  .mrow .dt{font-weight:700; color:var(--oxblood); direction:ltr; text-align:start; white-space:nowrap; font-family:Georgia,serif;}
+  .mrow .tx b{color:var(--ink);}
+  .mrow .tx{color:var(--muted);}
+  .legend{display:flex; gap:16px; flex-wrap:wrap; font-size:11.5px; color:var(--muted); margin-top:8px;}
+  .legend i{display:inline-block; width:12px; height:12px; border-radius:3px; vertical-align:-2px; margin-inline-end:5px;}
+  .foot{font-size:11.5px; color:var(--muted); line-height:1.7; margin-top:4px;}
+  .foot b{color:var(--ink);}
+</style>
+</head>
+<body>
+<div class="brandbar">
+  <a class="brand-logo" href="https://www.omnamgroup.com" target="_blank" rel="noopener">
+    <div class="wm">OMNAM</div>
+    <div class="wm-sub">INVESTMENT&nbsp;GROUP</div>
+  </a>
+  <div class="langsw"><button id="lang-he" class="on">עברית</button><button id="lang-en">English</button></div>
+</div>
+<header>
+  <h1 data-t="h1"></h1>
+</header>
+
+<div class="heroes">
+  <div class="hero red"><div class="t" data-t="hIn"></div><div class="v" id="o-in">—</div><div class="d" data-t="hInD"></div></div>
+  <div class="hero green"><div class="t" data-t="hOut"></div><div class="v" id="o-out">—</div><div class="d" data-t="hOutD"></div></div>
+  <div class="hero blue"><div class="t" data-t="hNet"></div><div class="v" id="o-net">—</div><div class="d" data-t="hNetD"></div></div>
+  <div class="hero gold"><div class="t" data-t="hRet"></div><div class="v" id="o-ret">—</div><div class="d" data-t="hRetD"></div></div>
+</div>
+
+<div class="card">
+  <h2 data-t="tlTitle"></h2>
+  <div class="sub" data-t="tlSub"></div>
+  <svg id="ch-timeline" width="100%" height="300" viewBox="0 0 1100 300"></svg>
+  <div class="legend">
+    <span><i style="background:#5e2c23"></i><span data-t="lgIn"></span></span>
+    <span><i style="background:#7f9db8"></i><span data-t="lgOut"></span></span>
+    <span><i style="background:#2b2320; height:3px; border-radius:2px;"></i><span data-t="lgCum"></span></span>
+  </div>
+</div>
+
+<div class="card">
+  <h2 data-t="ccTitle"></h2>
+  <div class="sub" data-t="ccSub"></div>
+  <table class="tbl" id="cc-table"></table>
+</div>
+
+<div class="card">
+  <h2 data-t="bdTitle"></h2>
+  <div class="sub" data-t="bdSub"></div>
+  <svg id="ch-budget" width="100%" height="260" viewBox="0 0 1100 260"></svg>
+  <div class="legend">
+    <span><i style="background:#5e2c23"></i><span data-t="bgPurch"></span></span>
+    <span><i style="background:#7f9db8"></i><span data-t="bgHotel"></span></span>
+    <span><i style="background:#cbb9a8"></i><span data-t="bgResi"></span></span>
+    <span><i style="background:#a39d99"></i><span data-t="bgVat"></span></span>
+  </div>
+</div>
+
+<div class="card">
+  <h2 data-t="msTitle"></h2>
+  <div id="milestones"></div>
+</div>
+
+<div class="foot" data-t="foot"></div>
+<div style="background:var(--oxblood); margin:20px -22px 0; padding:13px 36px; display:flex; justify-content:space-between; align-items:center;">
+  <span style="font-family:Georgia,serif; color:var(--azure); font-size:13px; letter-spacing:5px;">OMNAM</span>
+  <span style="color:var(--azure); font-size:9.5px; letter-spacing:3px; opacity:.8;">CONFIDENTIAL</span>
+</div>
+
+<script>
+const CF = {"annual": [{"y": 2026, "inn": -68402637.0, "out": 0.0}, {"y": 2027, "inn": -38288953.6, "out": 0.0}, {"y": 2028, "inn": -14461185.54, "out": 0.0}, {"y": 2030, "inn": 0.0, "out": 76255093.99}, {"y": 2031, "inn": 0.0, "out": 248252310.43}, {"y": 2032, "inn": 0.0, "out": 6340826.43}, {"y": 2033, "inn": 0.0, "out": 7388905.45}, {"y": 2034, "inn": 0.0, "out": 7560746.04}, {"y": 2035, "inn": 0.0, "out": 8662236.29}, {"y": 2036, "inn": 0.0, "out": 18933749.07}], "calls": [{"s": 46295, "y": 2026, "m": 9, "v": 12265371.62}, {"s": 46326, "y": 2026, "m": 10, "v": 4631976.07}, {"s": 46356, "y": 2026, "m": 11, "v": 32505289.31}, {"s": 46387, "y": 2026, "m": 12, "v": 19000000.0}, {"s": 46507, "y": 2027, "m": 4, "v": 38141533.45}, {"s": 46691, "y": 2027, "m": 10, "v": 147420.15}, {"s": 46783, "y": 2028, "m": 1, "v": 5000000.0}, {"s": 46873, "y": 2028, "m": 4, "v": 211533.45}, {"s": 47057, "y": 2028, "m": 10, "v": 2357977.58}, {"s": 47087, "y": 2028, "m": 11, "v": 6891674.51}], "budget": {"serials": [46204, 46235, 46266, 46296, 46327, 46357, 46388, 46419, 46447, 46478, 46508, 46539], "purchase": [2100000, 4543685, 1080000, 44500000, 53484750, 2000000, 2010000, 0, 0, 0, 0, 0], "resi": [0, 50000, 150000, 0, 75000, 0, 375000, 50000, 200000, 0, 150000, 0], "hotel": [1309805.7, 795311, 2224237.1, 1234640, 9719150.67, 2011866.67, 5070626.11, 5159123.61, 5061311.11, 5048625.94, 5039311.11, 4300111.11], "vat": [447091.23, 384837.01, -187840.73, -260311.86, -194792.96, 469900.8, 730801.7, 215506.25, -33176.7, -28889.58, -12960, -134732.67]}, "totals": {"totIn": 121152776.14, "totOut": 373393867.7, "peak": 121152776.14, "irr": 0.283733, "em": 3.082}};
+
+let LANG = 'he';
+const MONTH_HE = ['ינו','פבר','מרץ','אפר','מאי','יוני','יולי','אוג','ספט','אוק','נוב','דצמ'];
+const MONTH_EN = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const TXT = {
+h1:{he:'תוכנית תזרים למשקיע LP<small>פרויקט מלון יוקרה ומגורים, ירושלים | כל הסכומים במיליוני ₪ | נגזר מהמודל המלא ומתקציב הפרויקט</small>',
+    en:'LP Cash-Flow Plan<small>Luxury Hotel &amp; Residences, Jerusalem | All figures in ILS millions | Derived from the full model and project budget</small>'},
+hIn:{he:'סה"כ הזרמות LP (קריאות הון)', en:'Total LP Contributions'},
+hInD:{he:'‏10 קריאות הון, ‏09/2026–11/2028', en:'10 capital calls, 09/2026–11/2028'},
+hOut:{he:'סה"כ חלוקות ל-LP', en:'Total Distributions to LP'},
+hOutD:{he:'מ-‏03/2030 עד ‏09/2036', en:'From 03/2030 to 09/2036'},
+hNet:{he:'רווח נקי ל-LP (מ\' ₪)', en:'LP Net Profit (₪m)'},
+hNetD:{he:'החזר קרן מלא צפוי עד ‏2031', en:'Full capital back expected by 2031'},
+hRet:{he:'תשואה | מכפיל', en:'IRR | Multiple'},
+hRetD:{he:'XIRR חודשי מהמודל המלא', en:'Monthly XIRR from the full model'},
+tlTitle:{he:'ציר הזמן המלא — כסף פנימה וכסף החוצה (מ\' ₪, שנתי)', en:'Full Timeline — money in and money out (₪m, annual)'},
+tlSub:{he:'עמודות אדומות: הזרמות המשקיע. עמודות ירוקות: חלוקות למשקיע. הקו הכחול: הפוזיציה המצטברת נטו.', en:'Red bars: investor contributions. Green bars: distributions to the investor. Blue line: cumulative net position.'},
+lgIn:{he:'הזרמות LP', en:'LP contributions'},
+lgOut:{he:'חלוקות ל-LP', en:'Distributions to LP'},
+lgCum:{he:'מצטבר נטו', en:'Cumulative net'},
+ccTitle:{he:'לוח קריאות ההון', en:'Capital-Call Schedule'},
+ccSub:{he:'לפי המודל המלא. הסכומים בחלק ה-LP (‏75% מהזרמות ההון של השותפות).', en:'Per the full model. Amounts are the LP share (75% of partnership equity).'},
+ccH:{he:['#','מועד','סכום (מ\' ₪)','מצטבר (מ\' ₪)','% מסך ההתחייבות'], en:['#','Date','Amount (₪m)','Cumulative (₪m)','% of commitment']},
+bdTitle:{he:'צפי 12 חודשים קדימה — שימושי המזומן בפרויקט (‏07/2026–06/2027)', en:'12-Month Forward Forecast — project cash uses (07/2026–06/2027)'},
+bdSub:{he:'מקור: תקציב הפרויקט (8.7). סה"כ ‏159.1מ\' ₪ ברמת הפרויקט (‏100%), מזה רכישה ועלויות סגירה ‏109.7מ\'. המשולשים מסמנים את קריאות ההון של ה-LP באותם חודשים לפי המודל.', en:'Source: project budget (8.7). Total ₪159.1m at project level (100%), of which purchase & closing ₪109.7m. Triangles mark the LP capital calls in those months per the model.'},
+bgPurch:{he:'רכישה, מסים וסגירה', en:'Purchase, taxes & closing'},
+bgHotel:{he:'מלון (בנייה ורך)', en:'Hotel (hard & soft)'},
+bgResi:{he:'מגורים (רך)', en:'Residential (soft)'},
+bgVat:{he:'מע"מ נטו', en:'Net VAT'},
+msTitle:{he:'אבני דרך תזרימיות', en:'Cash-Flow Milestones'},
+miles:{he:[
+  ['09/2026','<b>קריאת הון ראשונה</b> — כניסת ה-LP לעסקה (12.3מ\' ₪)'],
+  ['11–12/2026','<b>השלמת הרכישה</b> — הקריאות הגדולות: 32.5מ\' + 19.0מ\' ₪'],
+  ['01/2028','<b>יתרת מניות המגורים</b> — 5.0מ\' ₪ במועד קבלת התב"ע החדשה'],
+  ['04/2027','<b>היטל השבחה ותחילת עבודות</b> — קריאה של 38.2מ\' ₪'],
+  ['03/2030','<b>פתיחת המלון</b> — החלוקה הראשונה ל-LP: ‏43.5מ\' ₪'],
+  ['09/2030','<b>מימון-מחדש של המלון</b> — קריאה אחרונה (נטו +0.5מ\'), חלוקות שוטפות'],
+  ['09–10/2031','<b>מסירת המגורים ושחרור ה-Escrow</b> — החלוקה העיקרית: ‏242.2מ\' ₪; החזר קרן מלא'],
+  ['09/2036','<b>מכירת המלון וסיום העסקה</b> — חלוקה אחרונה: ‏13.0מ\' ₪']],
+ en:[
+  ['09/2026','<b>First capital call</b> — LP enters the deal (₪12.3m)'],
+  ['11–12/2026','<b>Acquisition completion</b> — the large calls: ₪32.5m + ₪19.0m'],
+  ['01/2028','<b>Residential shares balance</b> — ₪5.0m upon receipt of the new zoning plan'],
+  ['04/2027','<b>Betterment levy &amp; works start</b> — ₪38.2m call'],
+  ['03/2030','<b>Hotel opening</b> — first distribution to LP: ₪43.5m'],
+  ['09/2030','<b>Hotel refinancing</b> — final call (net +₪0.5m), ongoing distributions'],
+  ['09–10/2031','<b>Residential delivery &amp; escrow release</b> — main distribution: ₪242.2m; full capital returned'],
+  ['09/2036','<b>Hotel sale &amp; deal completion</b> — final distribution: ₪13.0m']]},
+foot:{he:'<b>אודות:</b> לוח התזרים נגזר ישירות מהמודל המלא של הפרויקט (אותו מנוע המזין את דשבורד הכדאיות — תרחיש הבסיס) ומתקציב הפרויקט העדכני לצפי 12 החודשים. מועדי החלוקות תלויים בהתקדמות בפועל. הנתונים להמחשה בלבד ואינם מהווים ייעוץ השקעות או הצעה לציבור.',
+ en:'<b>About:</b> The schedule is derived directly from the project\'s full model (the same engine behind the feasibility dashboard — base case) and the current project budget for the 12-month forecast. Distribution timing depends on actual progress. For illustration only; not investment advice or a public offering.'},
+};
+const t = k => TXT[k][LANG];
+const LOC = () => LANG==='he' ? 'he-IL' : 'en-US';
+const fM = x => (x/1e6).toLocaleString(LOC(), {maximumFractionDigits:1});
+const mIls = x => LANG==='he' ? fM(x)+" מ' ₪" : '₪'+fM(x)+'m';
+
+function monthLabel(y, m){ return (LANG==='he'?MONTH_HE:MONTH_EN)[m-1] + " " + String(y).slice(2) + "'"; }
+
+function drawTimeline(){
+  const svg = document.getElementById('ch-timeline');
+  const A = CF.annual;
+  const Wd=1100, Hd=300, padT=18, padB=26, padL=10, padR=56;
+  const years = A.map(a=>a.y);
+  const maxOut = Math.max(...A.map(a=>a.out));
+  const maxIn  = Math.max(...A.map(a=>-a.inn));
+  const cums = []; let c=0;
+  for (const a of A){ c += a.inn + a.out; cums.push(c); }
+  const cumMax = Math.max(...cums, 0), cumMin = Math.min(...cums, 0);
+  const y0 = padT + (Hd-padT-padB)*maxOut/(maxOut+maxIn);
+  const sc = (Hd-padT-padB)/(maxOut+maxIn);
+  const bw = (Wd-padL-padR)/A.length;
+  const cy = v => padT + (Math.max(cumMax,0)-v)/((Math.max(cumMax,0)-Math.min(cumMin,0))||1)*(Hd-padT-padB);
+  let s = `<line x1="${padL}" y1="${y0}" x2="${Wd-padR}" y2="${y0}" stroke="#ded4cb"/>`;
+  A.forEach((a,i)=>{
+    const x = padL + i*bw;
+    if (a.out > 1){
+      const h = a.out*sc;
+      s += `<rect x="${x+4}" y="${y0-h}" width="${bw-8}" height="${Math.max(h,1.5)}" rx="3" fill="#7f9db8" opacity=".9"/>`;
+      if (a.out/1e6 > 4) s += `<text x="${x+bw/2}" y="${y0-h-5}" font-size="10.5" font-weight="600" text-anchor="middle" fill="#5c7d99">${fM(a.out)}</text>`;
+    }
+    if (a.inn < -1){
+      const h = -a.inn*sc;
+      s += `<rect x="${x+4}" y="${y0}" width="${bw-8}" height="${Math.max(h,1.5)}" rx="3" fill="#5e2c23" opacity=".9"/>`;
+      if (-a.inn/1e6 > 4) s += `<text x="${x+bw/2}" y="${y0+h+13}" font-size="10.5" font-weight="600" text-anchor="middle" fill="#4a221b">${fM(-a.inn)}</text>`;
+    }
+    s += `<text x="${x+bw/2}" y="${Hd-8}" font-size="10.5" text-anchor="middle" fill="#9a8f89">${a.y}</text>`;
+  });
+  let path = cums.map((v,i)=>(i?'L':'M')+(padL+i*bw+bw/2).toFixed(1)+','+cy(v).toFixed(1)).join(' ');
+  s += `<path d="${path}" fill="none" stroke="#2b2320" stroke-width="2.5" stroke-dasharray="1 0"/>`;
+  cums.forEach((v,i)=>{ s += `<circle cx="${padL+i*bw+bw/2}" cy="${cy(v)}" r="3" fill="#2b2320"/>`; });
+  const last = cums[cums.length-1];
+  s += `<text x="${Wd-padR+6}" y="${cy(last)+4}" font-size="11.5" font-weight="700" fill="#2b2320" direction="ltr">${fM(last)}</text>`;
+  svg.innerHTML = s;
+}
+
+function buildCalls(){
+  const rows = CF.calls;
+  const H = t('ccH');
+  let html = '<tr>' + H.map(h=>'<th>'+h+'</th>').join('') + '</tr>';
+  let cum = 0;
+  rows.forEach((r,i)=>{
+    cum += r.v;
+    html += `<tr><td class="n">${i+1}</td><td class="n">${String(r.m).padStart(2,'0')}/${r.y}</td>
+      <td class="n">${fM(r.v)}</td><td class="n">${fM(cum)}</td>
+      <td class="n">${(cum/CF.totals.peak*100).toFixed(0)}%</td></tr>`;
+  });
+  html += `<tr class="tot"><td></td><td>${LANG==='he'?'סה"כ':'Total'}</td><td class="n">${fM(cum)}</td><td class="n">${fM(cum)}</td><td class="n">100%</td></tr>`;
+  document.getElementById('cc-table').innerHTML = html;
+}
+
+function drawBudget(){
+  const svg = document.getElementById('ch-budget');
+  const B = CF.budget;
+  const n = B.serials.length;
+  const Wd=1100, Hd=260, padT=16, padB=26, padL=10, padR=10;
+  const tot = i => B.purchase[i]+B.hotel[i]+B.resi[i]+Math.max(B.vat[i],0);
+  const mx = Math.max(...Array.from({length:n},(_,i)=>tot(i)));
+  const sc = (Hd-padT-padB)/mx;
+  const bw = (Wd-padL-padR)/n;
+  // month labels from serials
+  const lab = ser => {
+    const d = new Date(1899,11,30); d.setDate(d.getDate()+ser);
+    return monthLabel(d.getFullYear(), d.getMonth()+1);
+  };
+  // model LP calls within window
+  const callsBySerial = {};
+  for (const c of CF.calls){
+    for (let i=0;i<n;i++) if (Math.abs(c.s-B.serials[i])<20) callsBySerial[i] = (callsBySerial[i]||0)+c.v;
+  }
+  let s = '';
+  const y0 = Hd-padB;
+  for (let i=0;i<n;i++){
+    const x = padL+i*bw;
+    let yy = y0;
+    for (const [arr,color] of [[B.purchase,'#5e2c23'],[B.hotel,'#7f9db8'],[B.resi,'#cbb9a8'],[B.vat.map(v=>Math.max(v,0)),'#a39d99']]){
+      const v = arr[i];
+      if (v > 0){ const h=v*sc; s += `<rect x="${x+5}" y="${yy-h}" width="${bw-10}" height="${Math.max(h,1)}" fill="${color}" opacity=".92"/>`; yy -= h; }
+    }
+    const tv = tot(i);
+    if (tv/1e6 > 2) s += `<text x="${x+bw/2}" y="${yy-5}" font-size="10" font-weight="600" text-anchor="middle" fill="#6a5a53">${fM(tv)}</text>`;
+    if (callsBySerial[i]) {
+      s += `<path d="M${x+bw/2-7},${padT+6} l14,0 l-7,11 z" fill="#5e2c23"/>`;
+      s += `<text x="${x+bw/2}" y="${padT}" font-size="9.5" font-weight="700" text-anchor="middle" fill="#5e2c23" direction="ltr">${fM(callsBySerial[i])}</text>`;
+    }
+    s += `<text x="${x+bw/2}" y="${Hd-8}" font-size="10" text-anchor="middle" fill="#9a8f89">${lab(B.serials[i])}</text>`;
+  }
+  s += `<line x1="${padL}" y1="${y0}" x2="${Wd-padR}" y2="${y0}" stroke="#ded4cb"/>`;
+  svg.innerHTML = s;
+}
+
+function buildMilestones(){
+  document.getElementById('milestones').innerHTML =
+    TXT.miles[LANG].map(([d,x])=>`<div class="mrow"><div class="dt">${d}</div><div class="tx">${x}</div></div>`).join('');
+}
+
+function render(){
+  document.documentElement.setAttribute('lang', LANG);
+  document.documentElement.setAttribute('dir', LANG==='he'?'rtl':'ltr');
+  document.querySelectorAll('[data-t]').forEach(el=>{ el.innerHTML = t(el.dataset.t); });
+  document.getElementById('lang-he').classList.toggle('on', LANG==='he');
+  document.getElementById('lang-en').classList.toggle('on', LANG==='en');
+  document.getElementById('o-in').textContent = fM(CF.totals.totIn);
+  document.getElementById('o-out').textContent = fM(CF.totals.totOut);
+  document.getElementById('o-net').textContent = fM(CF.totals.totOut - CF.totals.totIn);
+  document.getElementById('o-ret').textContent = (CF.totals.irr*100).toFixed(2)+'% | ' + (LANG==='he' ? '×'+CF.totals.em.toFixed(2) : CF.totals.em.toFixed(2)+'x');
+  drawTimeline(); buildCalls(); drawBudget(); buildMilestones();
+}
+document.getElementById('lang-he').addEventListener('click', ()=>{ LANG='he'; render(); });
+document.getElementById('lang-en').addEventListener('click', ()=>{ LANG='en'; render(); });
+render();
+</script>
+</body>
+</html>
